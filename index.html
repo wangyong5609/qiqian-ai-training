@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>柒仟财税 AI 实战培训手册</title>
+  <title>企犇牛 AI 实战培训手册</title>
   <style>
     :root {
       --canvas: #faf9f5;
@@ -44,7 +44,7 @@
       --blue-soft: #e3f2ee;
       --shadow: none;
       --radius: 12px;
-      --sidebar: 276px;
+      --nav-height: 76px;
     }
 
     * {
@@ -75,29 +75,33 @@
 
     .app {
       min-height: 100vh;
-      display: grid;
-      grid-template-columns: var(--sidebar) minmax(0, 1fr);
+      display: block;
     }
 
     .sidebar {
       position: sticky;
       top: 0;
-      height: 100vh;
-      padding: 24px 18px;
+      z-index: 30;
+      min-height: var(--nav-height);
+      height: auto;
+      padding: 14px clamp(18px, 4vw, 42px);
       background: var(--surface-dark);
       color: var(--on-dark);
       display: flex;
-      flex-direction: column;
-      gap: 18px;
-      overflow: auto;
+      align-items: center;
+      gap: 20px;
+      overflow-x: auto;
+      overflow-y: visible;
     }
 
     .brand {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 4px 4px 18px;
-      border-bottom: 1px solid rgba(250, 249, 245, .12);
+      flex: 0 0 auto;
+      padding: 0 18px 0 0;
+      border-right: 1px solid rgba(250, 249, 245, .12);
+      border-bottom: 0;
     }
 
     .mark {
@@ -129,8 +133,7 @@
     }
 
     .search {
-      display: grid;
-      gap: 8px;
+      display: none;
     }
 
     .search label {
@@ -154,17 +157,19 @@
     }
 
     .nav {
-      display: grid;
-      gap: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      min-width: max-content;
     }
 
     .nav button {
-      width: 100%;
-      min-height: 42px;
+      width: auto;
+      min-height: 40px;
       border: 0;
       border-radius: 8px;
-      padding: 10px 12px;
-      text-align: left;
+      padding: 9px 12px;
+      text-align: center;
       color: var(--on-dark-soft);
       background: transparent;
       cursor: pointer;
@@ -175,10 +180,11 @@
     .nav button.active {
       color: #fff;
       background: var(--surface-dark-elevated);
-      box-shadow: inset 3px 0 0 var(--primary);
+      box-shadow: inset 0 -3px 0 var(--primary);
     }
 
     .sidebar-note {
+      display: none;
       margin-top: auto;
       padding: 12px;
       border: 1px solid rgba(250, 249, 245, .14);
@@ -194,7 +200,7 @@
 
     .topbar {
       position: sticky;
-      top: 0;
+      top: var(--nav-height);
       z-index: 5;
       display: flex;
       justify-content: space-between;
@@ -721,20 +727,42 @@
 
     @media (max-width: 980px) {
       .app {
-        grid-template-columns: 1fr;
+        display: block;
       }
 
       .sidebar {
         position: fixed;
-        inset: 0 auto 0 0;
-        width: min(86vw, 310px);
+        inset: 0;
+        width: 100vw;
+        min-height: 100vh;
+        align-items: flex-start;
+        flex-direction: column;
         z-index: 30;
-        transform: translateX(-102%);
+        transform: translateY(-102%);
         transition: transform .22s ease;
       }
 
       .sidebar.open {
-        transform: translateX(0);
+        transform: translateY(0);
+      }
+
+      .brand {
+        width: 100%;
+        border-right: 0;
+        border-bottom: 1px solid rgba(250, 249, 245, .12);
+        padding-bottom: 16px;
+      }
+
+      .nav {
+        width: 100%;
+        min-width: 0;
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .nav button {
+        width: 100%;
+        text-align: left;
       }
 
       .mobile-menu {
@@ -750,6 +778,7 @@
       }
 
       .topbar {
+        top: 0;
         align-items: flex-start;
       }
 
@@ -813,8 +842,8 @@
       <div class="brand">
         <div class="mark">✶</div>
         <div>
-          <p class="brand-title">柒仟财税培训手册</p>
-          <p class="brand-subtitle">全员 3 小时实战版</p>
+          <p class="brand-title">企犇牛培训手册</p>
+          <p class="brand-subtitle">一天 6 小时实战版</p>
         </div>
       </div>
 
@@ -824,16 +853,17 @@
       </div>
 
       <nav class="nav" aria-label="培训手册菜单">
-        <button class="active" data-section="home">培训首页</button>
-        <button data-section="basics">AI 基础</button>
-        <button data-section="cases">Mock 案例库</button>
-        <button data-section="sales">销售顾问</button>
-        <button data-section="registration">工商许可</button>
-        <button data-section="accounting">会计代账</button>
-        <button data-section="service">客服续费</button>
-        <button data-section="operations">管理运营</button>
-        <button data-section="library">提示词总库</button>
-        <button data-section="agenda">讲师流程</button>
+        <button class="active" data-section="home">首页</button>
+        <button data-section="tools">工具能力</button>
+        <button data-section="sales">获客咨询</button>
+        <button data-section="registration">工商办理</button>
+        <button data-section="accounting">代账交付</button>
+        <button data-section="service">客户服务</button>
+        <button data-section="operations">经营管理</button>
+        <button data-section="knowledge">AI知识库</button>
+        <button data-section="fun">趣味玩法</button>
+        <button data-section="agenda">课程安排</button>
+        <button data-section="library">提示词库</button>
       </nav>
 
       <div class="sidebar-note">
@@ -844,9 +874,9 @@
     <main class="main">
       <header class="topbar">
         <button class="mobile-menu" id="mobileMenu" type="button">菜单</button>
-        <p class="topbar-title">面向不懂技术员工：复制、替换、审核、使用</p>
+        <p class="topbar-title">面向不懂技术员工：整理、表达、审核、沉淀</p>
         <div class="topbar-actions">
-          <span class="pill">国内免费工具优先</span>
+          <span class="pill">豆包 + Kimi</span>
           <span class="pill">成都小微企业案例</span>
           <span class="pill">人工审核必做</span>
         </div>
@@ -856,12 +886,12 @@
         <section class="section active" id="home" data-title="培训首页">
           <div class="hero">
             <div class="hero-copy">
-              <h1>柒仟财税 AI 实战培训手册</h1>
-              <p class="lead">这不是技术课。目标是让销售、工商、会计、客服、管理岗当天学会用 AI 产出工作初稿：话术、清单、总结、风险提示和 SOP。</p>
+              <h1>企犇牛 AI 实战培训手册</h1>
+              <p class="lead">这不是技术课。目标是让销售、工商、会计、客服、管理岗一天内学会用豆包和 Kimi 完成资料整理、客户沟通、知识库沉淀和经营复盘。</p>
               <div class="hero-metrics">
-                <div class="metric"><strong>3小时</strong><span>全员讲练平衡</span></div>
-                <div class="metric"><strong>30+</strong><span>可复制提示词</span></div>
-                <div class="metric"><strong>4个</strong><span>成都小微 mock 案例</span></div>
+                <div class="metric"><strong>6小时</strong><span>上午 3 小时 + 下午 3 小时</span></div>
+                <div class="metric"><strong>2个</strong><span>豆包负责表达，Kimi负责资料</span></div>
+                <div class="metric"><strong>7类</strong><span>业务与个人场景</span></div>
               </div>
             </div>
             <div class="panel flow-map">
@@ -869,7 +899,7 @@
               <div class="flow-step"><b>1</b><div>获客咨询<br><span>客户只问价格，先用 AI 做需求诊断。</span></div></div>
               <div class="flow-step"><b>2</b><div>工商办理<br><span>注册、变更、注销、许可材料清单化。</span></div></div>
               <div class="flow-step"><b>3</b><div>代账交付<br><span>票据、流水、资料缺口、风险点初筛。</span></div></div>
-              <div class="flow-step"><b>4</b><div>客服续费<br><span>投诉总结、回访话术、续费挽留。</span></div></div>
+              <div class="flow-step"><b>4</b><div>客户服务<br><span>投诉总结、回访话术、续费挽留。</span></div></div>
             </div>
           </div>
 
@@ -893,16 +923,16 @@
             <div class="panel">
               <h3>推荐工具</h3>
               <ul class="checklist">
-                <li>DeepSeek：逻辑分析、表格整理、长文本总结。</li>
-                <li>豆包：话术润色、客服表达、口语化输出。</li>
-                <li>Kimi：长资料阅读、会议纪要、文档归纳。</li>
+                <li>Kimi：长资料阅读、客户记录总结、台账和知识库。</li>
+                <li>豆包：话术润色、客服表达、朋友圈和图片创意。</li>
+                <li>组合用法：Kimi 先整理，豆包再表达。</li>
               </ul>
             </div>
           </div>
 
           <div class="band soft">
             <h2>本次培训的核心原则</h2>
-            <p>每个岗位只记一个动作：把“原始资料”交给 AI，让 AI 变成“可执行表格或话术”，再由员工审核后使用。</p>
+            <p>每个岗位只记一条主线：Kimi 负责读资料、做结构化整理；豆包负责说人话、写客户能看懂的话术；员工负责判断、审核和沉淀。</p>
             <div class="tags">
               <span class="tag">马上能用</span>
               <span class="tag gold">不讲编程</span>
@@ -912,123 +942,159 @@
           </div>
         </section>
 
-        <section class="section" id="basics" data-title="AI 基础">
+        <section class="section" id="tools" data-title="工具能力">
           <div class="job-header">
             <div class="panel">
-              <h2>AI 基础：员工只需要掌握 4 步</h2>
-              <p class="lead">不要讲复杂模型原理。员工能把工作说清楚、把资料贴进去、把格式要明确，就能开始用。</p>
+              <h2>工具能力：豆包负责表达，Kimi负责资料</h2>
+              <p class="lead">一天培训不只讲提示词。员工要学会判断“这个任务该用豆包还是 Kimi”，再把结果放回企犇牛的业务流程。</p>
             </div>
             <div class="scenario">
-              <h3>万能公式</h3>
-              <p>你是【岗位角色】。请根据【资料】完成【任务】，输出为【格式】，最后提醒【人工审核点】。</p>
+              <h3>核心分工</h3>
+              <p>Kimi：读长资料、做表格、找依据。豆包：改话术、做文案、做图片、把专业话变成客户听得懂的话。</p>
             </div>
           </div>
 
           <div class="grid two">
             <div class="panel">
-              <h3>4 步操作</h3>
+              <h3>Kimi 适合做什么</h3>
               <ul class="checklist">
-                <li>定角色：你是财税顾问、代账会计、客服主管。</li>
-                <li>喂资料：贴客户背景、聊天记录、票据摘要。</li>
-                <li>定格式：要求表格、清单、微信话术、SOP。</li>
-                <li>要审核：让 AI 标出不确定项和需人工确认项。</li>
+                <li>读客户长聊天、政策文件、SOP、合同和表格。</li>
+                <li>生成客户画像、资料缺口表、风险点、待办清单。</li>
+                <li>搭建 FAQ 和内部知识库，回答员工业务问题。</li>
+                <li>做会议纪要、周报、经营复盘和流程优化建议。</li>
               </ul>
             </div>
             <div class="panel">
-              <h3>使用边界</h3>
+              <h3>豆包适合做什么</h3>
               <ul class="checklist">
-                <li>不能让 AI 直接承诺税务结果。</li>
-                <li>不能把客户敏感资料原样上传。</li>
-                <li>不能用 AI 替代最终申报、合同、政策判断。</li>
-                <li>可以让 AI 做初稿、清单、检查、总结。</li>
+                <li>把标准答案改成微信、电话、朋友圈和短视频话术。</li>
+                <li>润色销售跟进、客服安抚、续费挽留和内部通知。</li>
+                <li>生成宣传图文、节日海报文案、客户行业配图创意。</li>
+                <li>做个人效率玩法：计划、学习辅导、修图、灵感生成。</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="grid two" style="margin-top:16px">
+            <div class="panel">
+              <h3>通用工作流</h3>
+              <ul class="checklist">
+                <li>先用 Kimi 把原始资料整理成结构化表格。</li>
+                <li>再用豆包把表格内容改成客户能听懂的话术。</li>
+                <li>最后由员工审核政策、价格、承诺和隐私风险。</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>安全边界</h3>
+              <ul class="checklist">
+                <li>真实客户身份证、账号、票据原图先脱敏再上传。</li>
+                <li>税务、工商、许可结论必须人工复核。</li>
+                <li>AI 只能给初稿和检查清单，不能替公司做最终承诺。</li>
               </ul>
             </div>
           </div>
 
           <div class="prompt-list">
-            <article class="prompt-card" data-tags="基础 通用 需求整理">
-              <div class="prompt-head"><strong>基础 1：客户需求整理</strong><button class="copy-btn" type="button">复制提示词</button></div>
-              <pre>你是财税公司客户顾问。请根据下面的客户聊天记录，整理成表格：客户基本情况、明确需求、隐藏需求、客户顾虑、下一步追问问题、建议推荐服务。要求语言简洁，适合销售跟进使用。
+            <article class="prompt-card" data-tags="工具 Kimi 资料整理">
+              <div class="prompt-head"><strong>Kimi 1：资料结构化</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>请把下面的客户资料整理成结构化表格。表头为：客户背景、已知需求、隐藏需求、缺失信息、风险点、下一步动作、需人工确认事项。不要直接下税务结论。
 
-客户聊天记录：
-【粘贴客户聊天记录】</pre>
+客户资料：
+【粘贴聊天记录、表格摘要或文档内容】</pre>
             </article>
-            <article class="prompt-card" data-tags="基础 通用 输出检查">
-              <div class="prompt-head"><strong>基础 2：发送前检查</strong><button class="copy-btn" type="button">复制提示词</button></div>
-              <pre>请帮我检查下面这段准备发给客户的话术。检查维度：是否专业、是否清楚、是否有压迫感、是否遗漏下一步动作、是否存在过度承诺。然后给出优化版，保持微信沟通语气。
+            <article class="prompt-card" data-tags="工具 豆包 表达优化">
+              <div class="prompt-head"><strong>豆包 1：专业内容转客户话术</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>请把下面的专业说明改成客户能听懂的微信话术。要求：口语化、礼貌、清楚、有下一步动作，不夸大承诺，不制造焦虑。
 
-原话术：
-【粘贴原话术】</pre>
+专业说明：
+【粘贴 Kimi 整理出的标准答案】</pre>
             </article>
-            <article class="prompt-card" data-tags="基础 通用 表格">
-              <div class="prompt-head"><strong>基础 3：杂乱信息转表格</strong><button class="copy-btn" type="button">复制提示词</button></div>
-              <pre>请把下面的杂乱信息整理成表格。表头为：事项、当前状态、缺失信息、负责人、截止时间、风险提醒。无法判断的地方写“需人工确认”。
+            <article class="prompt-card" data-tags="工具 通用 检查">
+              <div class="prompt-head"><strong>通用 1：发送前审核</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>请检查下面准备发给客户的内容。检查维度：是否专业、是否清楚、是否过度承诺、是否涉及隐私、是否需要补充人工确认。最后给出优化版。
 
-原始信息：
-【粘贴资料】</pre>
+待发送内容：
+【粘贴内容】</pre>
             </article>
           </div>
         </section>
 
-        <section class="section" id="cases" data-title="Mock 案例库">
+        <section class="section" id="knowledge" data-title="AI知识库">
           <div class="panel">
-            <h2>Mock 案例库：成都本地小微企业</h2>
-            <p class="lead">培训现场不用真实客户数据。以下案例覆盖柒仟常见业务：注册、代账、票据资料、税务风险、续费挽留。</p>
+            <h2>AI知识库：把经验变成可复用答案</h2>
+            <p class="lead">企犇牛可以先做轻量知识库，不接系统、不做开发。Kimi 负责整理内部资料成 FAQ，豆包负责把标准答案改成客户能听懂的话术。</p>
           </div>
 
           <div class="grid two" style="margin-top:16px">
             <article class="case-card">
-              <h3>案例 A：蜀味小碗餐饮店</h3>
+              <h3>第 1 步：收集资料</h3>
               <div class="case-meta">
-                <span>客户：准备在成都武侯区开小餐饮店。</span>
-                <span>问题：只问“注册公司和代账多少钱”。</span>
-                <span>业务机会：公司注册、食品经营许可、代理记账、发票服务。</span>
+                <span>公司业务介绍、价格套餐、服务边界。</span>
+                <span>注册、变更、注销、代账、发票、零申报 SOP。</span>
+                <span>客服高频问题、销售异议、客户投诉记录。</span>
               </div>
-              <p class="small">模拟聊天：老板说预算有限，想尽快开业，不清楚个体户和公司的区别。</p>
+              <p class="small">训练重点：资料先脱敏，再上传给 Kimi 做结构化整理。</p>
             </article>
 
             <article class="case-card">
-              <h3>案例 B：锦城商贸有限公司</h3>
+              <h3>第 2 步：Kimi 生成 FAQ</h3>
               <div class="case-meta">
-                <span>客户：小规模商贸公司，月销售 20-40 万。</span>
-                <span>问题：票据乱、银行流水多、每月资料拖延。</span>
-                <span>业务机会：月度资料清单、票据规范、风险提醒、加购整理服务。</span>
+                <span>把内部资料整理成“问题-标准答案-依据-风险提醒”。</span>
+                <span>标记不确定内容：需主管确认、需会计确认、需工商确认。</span>
+                <span>沉淀为员工可查的知识库表格。</span>
               </div>
-              <p class="small">模拟资料：进项票不足，老板微信转账较多，部分收入未说明。</p>
+              <p class="small">训练重点：让 Kimi 输出可复制到表格的结构。</p>
             </article>
 
             <article class="case-card">
-              <h3>案例 C：蓉企咨询工作室</h3>
+              <h3>第 3 步：豆包改写客户话术</h3>
               <div class="case-meta">
-                <span>客户：咨询服务类小微企业。</span>
-                <span>问题：长期零申报，但实际有收款。</span>
-                <span>业务机会：税务风险沟通、规范申报、补充资料、老板财税培训。</span>
+                <span>标准答案太专业，客户看不懂。</span>
+                <span>豆包负责改成微信版、电话版、朋友圈版。</span>
+                <span>销售、客服、会计可按不同语气调用。</span>
               </div>
-              <p class="small">模拟聊天：客户问“我不开发票，是不是就不用交税”。</p>
+              <p class="small">训练重点：同一答案生成“正式、温和、成交引导”三个版本。</p>
             </article>
 
             <article class="case-card">
-              <h3>案例 D：青羊科技服务公司</h3>
+              <h3>第 4 步：人工审核沉淀</h3>
               <div class="case-meta">
-                <span>客户：柒仟老客户，已服务 1 年。</span>
-                <span>问题：认为回复慢、价格贵，准备换代账。</span>
-                <span>业务机会：投诉处理、服务补救、续费挽留、客户分层。</span>
+                <span>主管审核政策、价格、服务边界和风险承诺。</span>
+                <span>通过后沉淀进企犇牛 FAQ 和话术库。</span>
+                <span>每月复盘高频问题，更新知识库。</span>
               </div>
-              <p class="small">模拟投诉：客户说上月问题等了两天才回复，朋友推荐了更便宜的代账。</p>
+              <p class="small">训练重点：AI 负责初稿，最终可用版本必须人工确认。</p>
+            </article>
+          </div>
+
+          <div class="prompt-list">
+            <article class="prompt-card" data-tags="知识库 Kimi FAQ">
+              <div class="prompt-head"><strong>知识库 1：Kimi 生成 FAQ</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>请根据以下企犇牛内部资料，整理成 FAQ 表格。表头为：问题、标准答案、适用岗位、客户能否直接看到、依据、风险提醒、需人工确认项。
+
+内部资料：
+【粘贴脱敏后的 SOP、服务说明、客户问答】</pre>
+            </article>
+            <article class="prompt-card" data-tags="知识库 豆包 客户话术">
+              <div class="prompt-head"><strong>知识库 2：豆包改写客户话术</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>请把下面的标准答案改成客户微信回复。输出三个版本：简短版、专业版、温和成交版。要求客户听得懂，不夸大，不承诺不确定结果。
+
+标准答案：
+【粘贴 FAQ 标准答案】</pre>
             </article>
           </div>
 
           <div class="band">
-            <h3>现场使用方式</h3>
-            <p>讲师先用案例 A 做演示；分组时销售组用 A，会计组用 B，客服组用 D，管理组把 A-D 汇总成周报。</p>
+            <h3>现场练习</h3>
+            <p>讲师提供 10 条 mock 高频问题，学员先用 Kimi 生成 FAQ，再选 2 条用豆包改成客户话术。</p>
           </div>
         </section>
 
-        <section class="section" id="sales" data-title="销售顾问">
+        <section class="section" id="sales" data-title="获客咨询">
           <div class="job-header">
             <div class="panel">
-              <h2>销售顾问：从问价格到做诊断</h2>
-              <p class="lead">销售岗最适合先用 AI 做“客户诊断”和“话术优化”。核心不是让 AI 卖，而是让员工少漏问、说得更专业。</p>
+              <h2>获客咨询：从问价格到做诊断</h2>
+              <p class="lead">Kimi 先总结客户背景和隐藏需求，豆包再生成微信追问、报价解释和朋友圈私域内容。目标是少漏问、跟进更稳。</p>
               <div class="tags">
                 <span class="tag">客户追问</span>
                 <span class="tag">服务方案</span>
@@ -1043,30 +1109,37 @@
 
           <div class="prompt-list">
             <article class="prompt-card" data-tags="销售 顾问 诊断 餐饮">
-              <div class="prompt-head"><strong>销售 1：客户诊断追问</strong><button class="copy-btn" type="button">复制提示词</button></div>
-              <pre>你是成都财税顾问。客户准备开一家小餐饮店，只问注册公司和代账价格。请设计 8 个追问问题，用来判断客户是否需要：公司注册、个体户注册、食品经营许可、代理记账、发票服务、社保开户。输出为微信聊天话术，语气自然，不要像调查问卷。</pre>
+              <div class="prompt-head"><strong>获客 1：Kimi 客户画像</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>请根据以下客户聊天记录，整理客户画像。输出表格：客户行业、经营阶段、明确需求、隐藏需求、价格敏感度、成交信号、还需要追问的问题、推荐服务。
+
+客户聊天记录：
+【粘贴聊天记录】</pre>
             </article>
             <article class="prompt-card" data-tags="销售 顾问 方案">
-              <div class="prompt-head"><strong>销售 2：服务方案生成</strong><button class="copy-btn" type="button">复制提示词</button></div>
-              <pre>你是财税顾问。请根据以下客户信息，生成一份简短服务方案，包含：客户情况判断、推荐服务、每项服务价值、下一步需要客户提供的资料。不要直接承诺税务结果，涉及政策的地方提示“以主管部门和实际审核为准”。
+              <div class="prompt-head"><strong>获客 2：豆包追问话术</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>请根据下面的客户画像，生成一段微信追问话术。要求自然、简短、有顾问感，不像调查问卷，能引导客户补充关键信息。
 
-客户信息：
-【粘贴客户情况】</pre>
+客户画像：
+【粘贴 Kimi 整理结果】</pre>
             </article>
             <article class="prompt-card" data-tags="销售 顾问 报价">
-              <div class="prompt-head"><strong>销售 3：报价解释</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <div class="prompt-head"><strong>获客 3：报价解释</strong><button class="copy-btn" type="button">复制提示词</button></div>
               <pre>客户觉得代理记账价格贵。请帮我生成 3 个版本的解释话术：简短版、专业版、温和成交版。重点说明专业代账能减少资料遗漏、申报延误、发票和税务风险，但不要制造恐吓感。</pre>
             </article>
             <article class="prompt-card" data-tags="销售 顾问 异议">
-              <div class="prompt-head"><strong>销售 4：异议处理</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <div class="prompt-head"><strong>获客 4：异议处理</strong><button class="copy-btn" type="button">复制提示词</button></div>
               <pre>请针对客户异议“别人家更便宜”，生成一段微信回复。要求：先理解客户价格敏感，再解释服务差异，最后引导客户比较交付内容。语气真诚、克制，不贬低同行。</pre>
             </article>
             <article class="prompt-card" data-tags="销售 顾问 跟进">
-              <div class="prompt-head"><strong>销售 5：跟进计划</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <div class="prompt-head"><strong>获客 5：跟进计划</strong><button class="copy-btn" type="button">复制提示词</button></div>
               <pre>请根据以下客户沟通记录，帮我制定 3 天跟进计划。输出表格：跟进时间、跟进目标、发送话术、需要确认的信息、成交信号。
 
 客户沟通记录：
 【粘贴记录】</pre>
+            </article>
+            <article class="prompt-card" data-tags="销售 豆包 朋友圈 私域">
+              <div class="prompt-head"><strong>获客 6：朋友圈私域内容</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>请用豆包帮我写 3 条财税顾问朋友圈文案，主题是“新开小微企业为什么要规范记账”。要求：不吓唬客户、不卖惨、有真实服务感，每条 80 字以内。</pre>
             </article>
           </div>
 
@@ -1086,11 +1159,11 @@
           </div>
         </section>
 
-        <section class="section" id="registration" data-title="工商许可">
+        <section class="section" id="registration" data-title="工商办理">
           <div class="job-header">
             <div class="panel">
-              <h2>工商许可：把办理流程变成客户看得懂的清单</h2>
-              <p class="lead">工商和许可岗位的 AI 价值在于“减少反复解释”和“减少漏资料”。员工把办理事项讲清楚，AI 负责生成材料清单和客户通知。</p>
+              <h2>工商办理：把流程变成客户看得懂的清单</h2>
+              <p class="lead">Kimi 梳理办理资料、流程节点和异常提醒；豆包把内部流程改成客户通知、催资料话术和进度说明。</p>
               <div class="tags">
                 <span class="tag">注册</span>
                 <span class="tag">变更</span>
@@ -1106,8 +1179,8 @@
 
           <div class="prompt-list">
             <article class="prompt-card" data-tags="工商 注册 材料">
-              <div class="prompt-head"><strong>工商 1：注册材料清单</strong><button class="copy-btn" type="button">复制提示词</button></div>
-              <pre>你是工商注册专员。客户计划在成都注册一家小规模商贸公司。请生成客户需准备的材料清单、办理流程、常见卡点、需要提前确认的问题。输出为微信可发送版本，涉及审核口径请提示“以登记机关实际要求为准”。</pre>
+              <div class="prompt-head"><strong>工商 1：Kimi 材料清单</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>你是工商注册专员。客户计划在成都注册一家小规模商贸公司。请生成客户需准备的材料清单、办理流程、常见卡点、需要提前确认的问题。输出为表格，涉及审核口径请提示“以登记机关实际要求为准”。</pre>
             </article>
             <article class="prompt-card" data-tags="工商 经营范围">
               <div class="prompt-head"><strong>工商 2：经营范围沟通</strong><button class="copy-btn" type="button">复制提示词</button></div>
@@ -1122,11 +1195,18 @@
               <pre>客户想注销公司。请帮我生成一套注销前沟通问题，用于确认是否存在未申报、欠税、发票、银行账户、社保、公章、工商异常等事项。语气专业，不吓唬客户。</pre>
             </article>
             <article class="prompt-card" data-tags="工商 客户通知">
-              <div class="prompt-head"><strong>工商 5：进度提醒</strong><button class="copy-btn" type="button">复制提示词</button></div>
-              <pre>请把下面的办理进度整理成客户通知。要求：说明当前进度、下一步动作、客户需配合事项、预计反馈时间。语气简洁、负责。
+              <div class="prompt-head"><strong>工商 5：豆包进度提醒</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>请把下面的办理进度整理成客户微信通知。要求：说明当前进度、下一步动作、客户需配合事项、预计反馈时间。语气简洁、负责。
 
 办理进度：
 【粘贴内部进度】</pre>
+            </article>
+            <article class="prompt-card" data-tags="工商 Kimi 异常">
+              <div class="prompt-head"><strong>工商 6：异常事项检查</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>请根据以下客户办理情况，列出可能影响工商办理的异常事项。输出：异常事项、影响、需客户补充资料、内部负责人、是否需人工确认。
+
+办理情况：
+【粘贴客户情况】</pre>
             </article>
           </div>
 
@@ -1136,11 +1216,11 @@
           </div>
         </section>
 
-        <section class="section" id="accounting" data-title="会计代账">
+        <section class="section" id="accounting" data-title="代账交付">
           <div class="job-header">
             <div class="panel">
-              <h2>会计代账：资料整理、风险初筛、客户沟通</h2>
-              <p class="lead">会计岗不让 AI 做最终申报判断。真正落地的是：资料缺口清单、票据归类、流水说明、异常点提醒、客户补资料话术。</p>
+              <h2>代账交付：资料整理、风险初筛、客户沟通</h2>
+              <p class="lead">Kimi 负责整理票据、流水、资料缺口和风险初筛；豆包负责生成催资料、解释风险、提醒客户规范配合的话术。</p>
               <div class="tags">
                 <span class="tag">资料清单</span>
                 <span class="tag">票据整理</span>
@@ -1156,40 +1236,47 @@
 
           <div class="prompt-list">
             <article class="prompt-card" data-tags="会计 代账 资料清单">
-              <div class="prompt-head"><strong>会计 1：月度资料缺口</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <div class="prompt-head"><strong>代账 1：Kimi 月度资料缺口</strong><button class="copy-btn" type="button">复制提示词</button></div>
               <pre>你是代理记账会计。以下是客户本月提交的资料摘要，请整理：已收到资料、缺失资料、需要客户补充说明的问题、可能影响申报的风险点。输出表格，无法判断的写“需人工确认”。
 
 资料摘要：
 【粘贴资料摘要】</pre>
             </article>
             <article class="prompt-card" data-tags="会计 票据 分类">
-              <div class="prompt-head"><strong>会计 2：票据分类建议</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <div class="prompt-head"><strong>代账 2：票据分类建议</strong><button class="copy-btn" type="button">复制提示词</button></div>
               <pre>请根据下面的票据信息，按用途初步分类：收入票、成本票、费用票、待确认票、异常票。每一类说明判断原因和需客户补充的信息。注意：这只是整理建议，不作为最终入账判断。
 
 票据信息：
 【粘贴票据摘要】</pre>
             </article>
             <article class="prompt-card" data-tags="会计 银行流水">
-              <div class="prompt-head"><strong>会计 3：流水说明清单</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <div class="prompt-head"><strong>代账 3：流水说明清单</strong><button class="copy-btn" type="button">复制提示词</button></div>
               <pre>以下是客户银行流水摘要。请帮我列出需要客户说明的款项，输出表格：日期、金额、对方名称、疑问点、建议询问话术、是否影响本月处理。
 
 流水摘要：
 【粘贴流水摘要】</pre>
             </article>
             <article class="prompt-card" data-tags="会计 风险 零申报">
-              <div class="prompt-head"><strong>会计 4：零申报风险沟通</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <div class="prompt-head"><strong>代账 4：豆包零申报沟通</strong><button class="copy-btn" type="button">复制提示词</button></div>
               <pre>客户长期零申报，但聊天中提到实际有收款。请帮我生成一段专业沟通话术，提醒客户如实提供收入、成本和费用资料。要求：不直接下结论，不恐吓，强调规范申报和资料完整。</pre>
             </article>
             <article class="prompt-card" data-tags="会计 客户补资料">
-              <div class="prompt-head"><strong>会计 5：补资料微信话术</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <div class="prompt-head"><strong>代账 5：豆包补资料话术</strong><button class="copy-btn" type="button">复制提示词</button></div>
               <pre>请把下面的缺失资料整理成一段发给客户的微信。要求：先说明目的，再列清单，最后给截止时间和联系方式。语气礼貌、明确。
 
 缺失资料：
 【粘贴缺失资料】</pre>
             </article>
             <article class="prompt-card" data-tags="会计 数电票 电子凭证">
-              <div class="prompt-head"><strong>会计 6：数电票资料提醒</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <div class="prompt-head"><strong>代账 6：数电票资料提醒</strong><button class="copy-btn" type="button">复制提示词</button></div>
               <pre>你是代账会计。请给小微企业客户写一段提醒，说明本月需要整理和提供数电票、纸质发票、银行流水、合同或业务说明等资料。要求客户能看懂，并提醒电子凭证也要保存完整。</pre>
+            </article>
+            <article class="prompt-card" data-tags="代账 Kimi 台账">
+              <div class="prompt-head"><strong>代账 7：资料台账生成</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>请把以下客户本月资料整理成台账。表头为：资料类型、是否收到、对应月份、缺失说明、客户补充动作、内部处理人、截止时间。
+
+资料记录：
+【粘贴资料记录】</pre>
             </article>
           </div>
 
@@ -1209,11 +1296,11 @@
           </div>
         </section>
 
-        <section class="section" id="service" data-title="客服续费">
+        <section class="section" id="service" data-title="客户服务">
           <div class="job-header">
             <div class="panel">
-              <h2>客服续费：把情绪问题变成处理动作</h2>
-              <p class="lead">客服岗最容易马上见效：投诉记录总结、客户情绪判断、回访话术、续费挽留、工单归类。</p>
+              <h2>客户服务：把情绪问题变成处理动作</h2>
+              <p class="lead">Kimi 总结投诉、判断风险和归类工单；豆包生成安抚、回访、续费挽留和服务补救话术。</p>
               <div class="tags">
                 <span class="tag">投诉总结</span>
                 <span class="tag">回访</span>
@@ -1228,29 +1315,36 @@
 
           <div class="prompt-list">
             <article class="prompt-card" data-tags="客服 投诉 总结">
-              <div class="prompt-head"><strong>客服 1：投诉摘要</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <div class="prompt-head"><strong>服务 1：Kimi 投诉摘要</strong><button class="copy-btn" type="button">复制提示词</button></div>
               <pre>你是财税公司客服主管。请根据下面的客户投诉记录，整理成表格：客户不满点、涉及岗位、已发生影响、客户情绪、需要核实的信息、建议处理动作。
 
 投诉记录：
 【粘贴投诉记录】</pre>
             </article>
             <article class="prompt-card" data-tags="客服 安抚 话术">
-              <div class="prompt-head"><strong>客服 2：安抚话术</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <div class="prompt-head"><strong>服务 2：豆包安抚话术</strong><button class="copy-btn" type="button">复制提示词</button></div>
               <pre>客户反馈服务响应慢，情绪不满。请生成一段微信安抚话术：先承认体验问题，再说明会核实处理，明确下一步反馈时间。语气真诚，不推责，不卑微。</pre>
             </article>
             <article class="prompt-card" data-tags="客服 续费 挽留">
-              <div class="prompt-head"><strong>客服 3：续费挽留</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <div class="prompt-head"><strong>服务 3：续费挽留</strong><button class="copy-btn" type="button">复制提示词</button></div>
               <pre>客户觉得价格贵，准备换更便宜的代账公司。请生成续费挽留话术，包含：理解客户、复盘已提供服务、说明后续服务计划、邀请客户给一次改进机会。不要贬低同行。</pre>
             </article>
             <article class="prompt-card" data-tags="客服 回访">
-              <div class="prompt-head"><strong>客服 4：回访提纲</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <div class="prompt-head"><strong>服务 4：回访提纲</strong><button class="copy-btn" type="button">复制提示词</button></div>
               <pre>请为财税公司老客户回访设计 8 个问题，用于了解客户满意度、近期业务变化、是否有开票/用工/合同/税务问题、是否存在续费风险。输出为电话回访提纲。</pre>
             </article>
             <article class="prompt-card" data-tags="客服 工单">
-              <div class="prompt-head"><strong>客服 5：工单归类</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <div class="prompt-head"><strong>服务 5：工单归类</strong><button class="copy-btn" type="button">复制提示词</button></div>
               <pre>请把下面的客户问题记录归类，输出表格：问题类型、紧急程度、责任岗位、建议回复、是否影响续费、下一步动作。
 
 客户问题记录：
+【粘贴记录】</pre>
+            </article>
+            <article class="prompt-card" data-tags="客服 质检 Kimi">
+              <div class="prompt-head"><strong>服务 6：客服质检</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>请根据以下客服沟通记录进行质检。输出：响应速度、态度、专业度、是否明确下一步、是否有过度承诺、续费风险、改进建议。
+
+沟通记录：
 【粘贴记录】</pre>
             </article>
           </div>
@@ -1261,11 +1355,11 @@
           </div>
         </section>
 
-        <section class="section" id="operations" data-title="管理运营">
+        <section class="section" id="operations" data-title="经营管理">
           <div class="job-header">
             <div class="panel">
-              <h2>管理运营：用 AI 做复盘、质检和 SOP</h2>
-              <p class="lead">管理层不用先做复杂系统。先把团队周报、客户问题、服务质量、SOP 改进变成固定 AI 模板。</p>
+              <h2>经营管理：用 AI 做复盘、质检和 SOP</h2>
+              <p class="lead">Kimi 负责会议纪要、周报、客户风险分层和 SOP 优化；豆包负责把管理要求改成团队通知和培训话术。</p>
               <div class="tags">
                 <span class="tag">周报</span>
                 <span class="tag">质检</span>
@@ -1315,10 +1409,83 @@
 员工问题：
 【粘贴问题】</pre>
             </article>
+            <article class="prompt-card" data-tags="管理 豆包 通知">
+              <div class="prompt-head"><strong>管理 6：内部通知润色</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>请把下面的管理要求改成团队微信群通知。要求：清楚、直接、不过度强硬，有具体动作和截止时间。
+
+管理要求：
+【粘贴要求】</pre>
+            </article>
           </div>
         </section>
 
-        <section class="section" id="library" data-title="提示词总库">
+        <section class="section" id="fun" data-title="趣味玩法">
+          <div class="job-header">
+            <div class="panel">
+              <h2>趣味玩法：让员工愿意每天打开 AI</h2>
+              <p class="lead">这部分只占 10%，用于破冰和收尾。重点不是娱乐，而是让员工发现 AI 也能解决个人生活、学习和表达问题。</p>
+              <div class="tags">
+                <span class="tag">破冰</span>
+                <span class="tag">个人效率</span>
+                <span class="tag gold">豆包图片</span>
+                <span class="tag blue">Kimi规划</span>
+              </div>
+            </div>
+            <div class="scenario">
+              <h3>推荐玩法</h3>
+              <p>豆包做图文、修图和表达；Kimi 做计划、学习资料总结和复杂信息梳理。</p>
+            </div>
+          </div>
+
+          <div class="grid two">
+            <div class="panel">
+              <h3>适合豆包</h3>
+              <ul class="checklist">
+                <li>朋友圈文案、节日祝福、短视频脚本。</li>
+                <li>图片换背景、海报创意、客户行业配图。</li>
+                <li>孩子作业讲解、口语化学习辅导。</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>适合 Kimi</h3>
+              <ul class="checklist">
+                <li>旅游计划、家庭预算、个人周计划。</li>
+                <li>长文、书籍、课程资料总结。</li>
+                <li>把杂乱想法整理成清单和行动计划。</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="prompt-list">
+            <article class="prompt-card" data-tags="趣味 豆包 图片 朋友圈">
+              <div class="prompt-head"><strong>趣味 1：豆包朋友圈文案</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>请帮我写 5 条朋友圈文案，主题是“今天学会了用 AI 提高工作效率”。语气轻松、有收获感，不夸张，每条 60 字以内。</pre>
+            </article>
+            <article class="prompt-card" data-tags="趣味 Kimi 计划">
+              <div class="prompt-head"><strong>趣味 2：Kimi 周计划</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>请根据下面这些事项，帮我整理成一份个人周计划。输出：优先级、预计耗时、每天安排、需要提前准备的事项。
+
+本周事项：
+【粘贴事项】</pre>
+            </article>
+            <article class="prompt-card" data-tags="趣味 豆包 学习">
+              <div class="prompt-head"><strong>趣味 3：孩子学习辅导</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>请用小学生能听懂的话解释下面这个知识点，并给 3 个生活化例子和 3 道练习题。
+
+知识点：
+【粘贴知识点】</pre>
+            </article>
+            <article class="prompt-card" data-tags="趣味 Kimi 旅游">
+              <div class="prompt-head"><strong>趣味 4：旅行规划</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>请帮我做一份两天一晚旅行计划。要求：预算控制、交通安排、餐饮建议、适合家庭出行、每天不要太累。
+
+目的地和人数：
+【粘贴信息】</pre>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="library" data-title="提示词库">
           <div class="panel">
             <h2>提示词总库</h2>
             <p class="lead">这里汇总所有可复制提示词。搜索关键词后，复制再替换方括号里的内容即可。</p>
@@ -1330,36 +1497,38 @@
           <div class="prompt-list" id="libraryList"></div>
         </section>
 
-        <section class="section" id="agenda" data-title="讲师流程">
+        <section class="section" id="agenda" data-title="课程安排">
           <div class="panel">
-            <h2>3 小时讲师流程</h2>
-            <p class="lead">建议“讲练平衡”：每个岗位讲 1 个典型场景，现场复制 1 条提示词练习。</p>
+            <h2>一天课程安排：上午会用，下午用到业务里</h2>
+            <p class="lead">上午 3 小时建立工具认知和客户前端场景；下午 3 小时进入交付、客服、管理和知识库沉淀。</p>
           </div>
 
           <div class="timeline" style="margin-top:16px">
-            <div class="timeline-item"><b>0-15 分钟</b><span>AI 能做什么、不能做什么，强调人审和隐私。</span></div>
-            <div class="timeline-item"><b>15-45 分钟</b><span>万能公式：角色、资料、格式、审核点。</span></div>
-            <div class="timeline-item"><b>45-80 分钟</b><span>销售顾问：客户诊断、报价解释、异议处理。</span></div>
-            <div class="timeline-item"><b>80-110 分钟</b><span>工商许可：注册材料、流程提醒、客户通知。</span></div>
-            <div class="timeline-item"><b>110-150 分钟</b><span>会计代账：资料清单、票据整理、风险初筛。</span></div>
-            <div class="timeline-item"><b>150-180 分钟</b><span>客服续费、管理周报、提示词手册沉淀。</span></div>
+            <div class="timeline-item"><b>上午 0-30 分钟</b><span>AI 基础、隐私边界、豆包/Kimi分工。</span></div>
+            <div class="timeline-item"><b>上午 30-90 分钟</b><span>获客咨询：客户画像、追问话术、报价解释。</span></div>
+            <div class="timeline-item"><b>上午 90-150 分钟</b><span>工商办理：材料清单、流程节点、客户通知。</span></div>
+            <div class="timeline-item"><b>上午 150-180 分钟</b><span>小练习：从客户聊天生成需求表和回复话术。</span></div>
+            <div class="timeline-item"><b>下午 0-70 分钟</b><span>代账交付：资料缺口、票据流水、风险初筛。</span></div>
+            <div class="timeline-item"><b>下午 70-120 分钟</b><span>客户服务：投诉总结、客服质检、续费挽留。</span></div>
+            <div class="timeline-item"><b>下午 120-160 分钟</b><span>经营管理：周报、SOP、客户风险分层。</span></div>
+            <div class="timeline-item"><b>下午 160-180 分钟</b><span>AI知识库和趣味玩法收尾。</span></div>
           </div>
 
           <div class="grid two" style="margin-top:18px">
             <div class="panel">
               <h3>讲师话术重点</h3>
               <ul class="checklist">
-                <li>不要把 AI 讲神，员工只要会复制模板。</li>
-                <li>每次演示都用同一个结构：原始资料、提示词、输出、人工审核。</li>
-                <li>强调“替换客户信息”比“背提示词”更重要。</li>
+                <li>不要只讲提示词，要讲“资料整理→话术表达→人工审核”。</li>
+                <li>每次演示都标明：这一步用 Kimi，下一步用豆包。</li>
+                <li>强调业务判断仍由企犇牛员工负责。</li>
               </ul>
             </div>
             <div class="panel">
               <h3>现场产出</h3>
               <ul class="checklist">
-                <li>每人至少复制并改写 2 条提示词。</li>
-                <li>每组提交 1 个岗位工作模板。</li>
-                <li>讲师收集高频问题，课后合并成公司版提示词手册。</li>
+                <li>每人完成 1 次 Kimi 资料整理和 1 次豆包话术改写。</li>
+                <li>每组提交 1 个业务场景工作流。</li>
+                <li>课后沉淀企犇牛 FAQ、话术库和提示词库。</li>
               </ul>
             </div>
           </div>
