@@ -1,0 +1,1498 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>柒仟财税 AI 实战培训手册</title>
+  <style>
+    :root {
+      --canvas: #faf9f5;
+      --surface-soft: #f5f0e8;
+      --surface-card: #efe9de;
+      --surface-cream-strong: #e8e0d2;
+      --surface-dark: #181715;
+      --surface-dark-elevated: #252320;
+      --surface-dark-soft: #1f1e1b;
+      --primary: #cc785c;
+      --primary-active: #a9583e;
+      --accent-teal: #5db8a6;
+      --accent-amber: #e8a55a;
+      --success: #5db872;
+      --warning: #d4a017;
+      --error: #c64545;
+      --ink: #141413;
+      --body: #3d3d3a;
+      --body-strong: #252523;
+      --muted: #6c6a64;
+      --muted-soft: #8e8b82;
+      --hairline: #e6dfd8;
+      --hairline-soft: #ebe6df;
+      --on-primary: #ffffff;
+      --on-dark: #faf9f5;
+      --on-dark-soft: #a09d96;
+      --bg: var(--canvas);
+      --paper: var(--canvas);
+      --line: var(--hairline);
+      --brand: var(--primary);
+      --brand-dark: var(--primary-active);
+      --brand-soft: var(--surface-card);
+      --gold: var(--accent-amber);
+      --gold-soft: #fff0dc;
+      --red: var(--error);
+      --red-soft: #fae7e3;
+      --blue: var(--accent-teal);
+      --blue-soft: #e3f2ee;
+      --shadow: none;
+      --radius: 12px;
+      --sidebar: 276px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--bg);
+      font-family: Inter, "StyreneB", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.58;
+      overflow-x: hidden;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    a {
+      color: var(--primary);
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: var(--sidebar) minmax(0, 1fr);
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 24px 18px;
+      background: var(--surface-dark);
+      color: var(--on-dark);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      overflow: auto;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 4px 4px 18px;
+      border-bottom: 1px solid rgba(250, 249, 245, .12);
+    }
+
+    .mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: var(--primary);
+      color: var(--surface-dark);
+      font-size: 24px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 400;
+      display: grid;
+      place-items: center;
+      letter-spacing: 0;
+    }
+
+    .brand-title {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.25;
+      font-weight: 600;
+    }
+
+    .brand-subtitle {
+      margin: 2px 0 0;
+      color: var(--on-dark-soft);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .search {
+      display: grid;
+      gap: 8px;
+    }
+
+    .search label {
+      color: var(--on-dark-soft);
+      font-size: 12px;
+    }
+
+    .search input {
+      width: 100%;
+      height: 40px;
+      border: 1px solid rgba(250, 249, 245, .16);
+      border-radius: 8px;
+      background: var(--surface-dark-elevated);
+      color: var(--on-dark);
+      padding: 0 12px;
+      outline: none;
+    }
+
+    .search input:focus {
+      border-color: var(--primary);
+    }
+
+    .nav {
+      display: grid;
+      gap: 6px;
+    }
+
+    .nav button {
+      width: 100%;
+      min-height: 42px;
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 12px;
+      text-align: left;
+      color: var(--on-dark-soft);
+      background: transparent;
+      cursor: pointer;
+      transition: background .18s ease, color .18s ease;
+    }
+
+    .nav button:hover,
+    .nav button.active {
+      color: #fff;
+      background: var(--surface-dark-elevated);
+      box-shadow: inset 3px 0 0 var(--primary);
+    }
+
+    .sidebar-note {
+      margin-top: auto;
+      padding: 12px;
+      border: 1px solid rgba(250, 249, 245, .14);
+      border-radius: 8px;
+      color: var(--on-dark-soft);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .main {
+      min-width: 0;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      min-height: 64px;
+      padding: 12px clamp(18px, 4vw, 42px);
+      background: rgba(250, 249, 245, .92);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+    }
+
+    .mobile-menu {
+      display: none;
+      height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--canvas);
+      padding: 0 12px;
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    .topbar-title {
+      margin: 0;
+      font-size: 15px;
+      color: var(--muted);
+      font-weight: 650;
+      min-width: 0;
+    }
+
+    .topbar-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .content {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 48px clamp(18px, 4vw, 42px) 78px;
+    }
+
+    .section {
+      display: none;
+      animation: fadeIn .18s ease;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(320px, .85fr);
+      gap: 24px;
+      align-items: stretch;
+      margin-bottom: 24px;
+    }
+
+    .hero-copy,
+    .panel {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-copy {
+      padding: 56px;
+      background: var(--canvas);
+      border-radius: 16px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      line-height: 1.22;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      margin: 0 0 18px;
+      font-family: "Cormorant Garamond", "Songti SC", "STSong", "Noto Serif CJK SC", "Times New Roman", serif;
+      font-size: 64px;
+      font-weight: 500;
+      line-height: 1.05;
+      max-width: 780px;
+      overflow-wrap: anywhere;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-family: "Cormorant Garamond", "Songti SC", "STSong", "Noto Serif CJK SC", "Times New Roman", serif;
+      font-size: 42px;
+      font-weight: 500;
+      line-height: 1.12;
+    }
+
+    h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+
+    p {
+      margin: 0 0 12px;
+    }
+
+    .lead {
+      max-width: 820px;
+      color: var(--body);
+      font-size: 18px;
+    }
+
+    .hero-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    .metric {
+      padding: 14px;
+      border-radius: 8px;
+      background: var(--surface-soft);
+      border: 1px solid var(--hairline);
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 22px;
+      line-height: 1.2;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .flow-map {
+      padding: 22px;
+      color: var(--on-dark);
+      display: grid;
+      gap: 12px;
+      align-content: center;
+    }
+
+    .panel.flow-map {
+      background: var(--surface-dark);
+      border-color: var(--surface-dark);
+    }
+
+    .flow-map h2 {
+      color: var(--on-dark);
+    }
+
+    .flow-step {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding: 12px;
+      border: 1px solid rgba(250, 249, 245, .1);
+      border-radius: 8px;
+      background: var(--surface-dark-elevated);
+    }
+
+    .flow-step b {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      background: var(--primary);
+      color: var(--surface-dark);
+      font-size: 14px;
+    }
+
+    .flow-step span {
+      color: var(--on-dark-soft);
+      font-size: 13px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .panel {
+      padding: 20px;
+      background: var(--surface-card);
+      border-color: var(--hairline);
+      box-shadow: none;
+    }
+
+    .band {
+      margin: 22px 0;
+      padding: 32px;
+      border-radius: var(--radius);
+      background: var(--surface-card);
+      border: 1px solid var(--line);
+    }
+
+    .band.soft {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: var(--on-primary);
+    }
+
+    .band.soft .small,
+    .band.soft .lead {
+      color: rgba(255, 255, 255, .82);
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 12px 0 0;
+    }
+
+    .tag {
+      min-height: 26px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: var(--surface-card);
+      color: var(--ink);
+      border: 1px solid var(--hairline);
+    }
+
+    .tag.gold {
+      color: #6f4714;
+      background: var(--gold-soft);
+      border-color: #efd0a1;
+    }
+
+    .tag.red {
+      color: var(--red);
+      background: var(--red-soft);
+      border-color: #edc1b8;
+    }
+
+    .tag.blue {
+      color: var(--blue);
+      background: var(--blue-soft);
+      border-color: #c7ded8;
+    }
+
+    .band.soft .tag {
+      border-color: rgba(255, 255, 255, .34);
+      background: rgba(255, 255, 255, .16);
+      color: #fff;
+    }
+
+    .case-card {
+      display: grid;
+      gap: 10px;
+      min-height: 100%;
+      padding: 18px;
+      border-radius: var(--radius);
+      background: var(--surface-card);
+      border: 1px solid var(--line);
+    }
+
+    .case-card h3 {
+      margin: 0;
+    }
+
+    .case-meta {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(110px, 1fr));
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .timeline-item {
+      min-height: 112px;
+      padding: 14px;
+      border-radius: 8px;
+      background: var(--surface-card);
+      border: 1px solid var(--line);
+    }
+
+    .timeline-item b {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--primary-active);
+    }
+
+    .job-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, .48fr);
+      gap: 18px;
+      align-items: stretch;
+      margin-bottom: 18px;
+    }
+
+    .scenario {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .prompt-list {
+      display: grid;
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .prompt-card {
+      border: 1px solid rgba(250, 249, 245, .1);
+      background: var(--surface-dark);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: none;
+    }
+
+    .prompt-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 14px;
+      border-bottom: 1px solid rgba(250, 249, 245, .1);
+      background: var(--surface-dark-elevated);
+    }
+
+    .prompt-head strong {
+      font-size: 15px;
+      color: var(--on-dark);
+    }
+
+    .copy-btn {
+      flex: 0 0 auto;
+      min-height: 32px;
+      border: 1px solid var(--primary);
+      border-radius: 8px;
+      padding: 0 11px;
+      background: var(--primary);
+      color: var(--on-primary);
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .copy-btn:hover {
+      border-color: var(--primary-active);
+      background: var(--primary-active);
+    }
+
+    pre {
+      margin: 0;
+      padding: 15px;
+      overflow: auto;
+      color: var(--on-dark);
+      background: var(--surface-dark-soft);
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .checklist {
+      padding: 0;
+      margin: 10px 0 0;
+      list-style: none;
+      display: grid;
+      gap: 8px;
+    }
+
+    .checklist li {
+      position: relative;
+      padding-left: 22px;
+      color: var(--body);
+    }
+
+    .checklist li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: .65em;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+
+    .example-output {
+      border-left: 4px solid var(--primary);
+      background: var(--surface-soft);
+      padding: 14px 16px;
+      border-radius: 0 8px 8px 0;
+      color: var(--body);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface-card);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 720px;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--surface-soft);
+      color: var(--primary-active);
+      font-size: 13px;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .library-tools {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin: 18px 0;
+      flex-wrap: wrap;
+    }
+
+    .library-tools input {
+      min-width: min(420px, 100%);
+      height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0 12px;
+      background: var(--canvas);
+      outline: none;
+    }
+
+    .library-tools input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(204, 120, 92, .15);
+    }
+
+    .footer {
+      margin-top: 36px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      transform: translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      background: #101915;
+      color: var(--on-dark);
+      padding: 10px 14px;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      transition: .2s ease;
+      z-index: 20;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 980px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: fixed;
+        inset: 0 auto 0 0;
+        width: min(86vw, 310px);
+        z-index: 30;
+        transform: translateX(-102%);
+        transition: transform .22s ease;
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .mobile-menu {
+        display: inline-flex;
+        align-items: center;
+      }
+
+      .hero,
+      .job-header,
+      .grid.two,
+      .grid.three {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        align-items: flex-start;
+      }
+
+      .topbar-actions {
+        display: none;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .content {
+        padding-top: 22px;
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      h1 {
+        font-size: 30px;
+      }
+
+      h2 {
+        font-size: 30px;
+      }
+
+      .lead {
+        font-size: 16px;
+        overflow-wrap: anywhere;
+      }
+
+      .topbar {
+        gap: 10px;
+      }
+
+      .topbar-title {
+        display: none;
+      }
+
+      .hero-copy,
+      .panel,
+      .band {
+        padding: 18px;
+      }
+
+      .hero-metrics {
+        grid-template-columns: 1fr;
+      }
+
+      .prompt-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .copy-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="mark">✶</div>
+        <div>
+          <p class="brand-title">柒仟财税培训手册</p>
+          <p class="brand-subtitle">全员 3 小时实战版</p>
+        </div>
+      </div>
+
+      <div class="search">
+        <label for="navSearch">搜索菜单</label>
+        <input id="navSearch" type="search" placeholder="销售、代账、客服、提示词">
+      </div>
+
+      <nav class="nav" aria-label="培训手册菜单">
+        <button class="active" data-section="home">培训首页</button>
+        <button data-section="basics">AI 基础</button>
+        <button data-section="cases">Mock 案例库</button>
+        <button data-section="sales">销售顾问</button>
+        <button data-section="registration">工商许可</button>
+        <button data-section="accounting">会计代账</button>
+        <button data-section="service">客服续费</button>
+        <button data-section="operations">管理运营</button>
+        <button data-section="library">提示词总库</button>
+        <button data-section="agenda">讲师流程</button>
+      </nav>
+
+      <div class="sidebar-note">
+        现场建议：每讲一个岗位，只演示一个案例，再让学员复制提示词替换信息。
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button class="mobile-menu" id="mobileMenu" type="button">菜单</button>
+        <p class="topbar-title">面向不懂技术员工：复制、替换、审核、使用</p>
+        <div class="topbar-actions">
+          <span class="pill">国内免费工具优先</span>
+          <span class="pill">成都小微企业案例</span>
+          <span class="pill">人工审核必做</span>
+        </div>
+      </header>
+
+      <div class="content">
+        <section class="section active" id="home" data-title="培训首页">
+          <div class="hero">
+            <div class="hero-copy">
+              <h1>柒仟财税 AI 实战培训手册</h1>
+              <p class="lead">这不是技术课。目标是让销售、工商、会计、客服、管理岗当天学会用 AI 产出工作初稿：话术、清单、总结、风险提示和 SOP。</p>
+              <div class="hero-metrics">
+                <div class="metric"><strong>3小时</strong><span>全员讲练平衡</span></div>
+                <div class="metric"><strong>30+</strong><span>可复制提示词</span></div>
+                <div class="metric"><strong>4个</strong><span>成都小微 mock 案例</span></div>
+              </div>
+            </div>
+            <div class="panel flow-map">
+              <h2>财税服务全流程</h2>
+              <div class="flow-step"><b>1</b><div>获客咨询<br><span>客户只问价格，先用 AI 做需求诊断。</span></div></div>
+              <div class="flow-step"><b>2</b><div>工商办理<br><span>注册、变更、注销、许可材料清单化。</span></div></div>
+              <div class="flow-step"><b>3</b><div>代账交付<br><span>票据、流水、资料缺口、风险点初筛。</span></div></div>
+              <div class="flow-step"><b>4</b><div>客服续费<br><span>投诉总结、回访话术、续费挽留。</span></div></div>
+            </div>
+          </div>
+
+          <div class="grid three">
+            <div class="panel">
+              <h3>员工要学会</h3>
+              <ul class="checklist">
+                <li>把客户微信记录整理成需求表。</li>
+                <li>把杂乱资料整理成补资料清单。</li>
+                <li>把投诉记录整理成处理方案。</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>讲师要强调</h3>
+              <ul class="checklist">
+                <li>AI 输出是初稿，不是最终税务结论。</li>
+                <li>客户隐私、身份证、账号、票据原图不要直接上传。</li>
+                <li>所有政策、税率、申报判断必须人工核验。</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>推荐工具</h3>
+              <ul class="checklist">
+                <li>DeepSeek：逻辑分析、表格整理、长文本总结。</li>
+                <li>豆包：话术润色、客服表达、口语化输出。</li>
+                <li>Kimi：长资料阅读、会议纪要、文档归纳。</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="band soft">
+            <h2>本次培训的核心原则</h2>
+            <p>每个岗位只记一个动作：把“原始资料”交给 AI，让 AI 变成“可执行表格或话术”，再由员工审核后使用。</p>
+            <div class="tags">
+              <span class="tag">马上能用</span>
+              <span class="tag gold">不讲编程</span>
+              <span class="tag red">不上传隐私</span>
+              <span class="tag blue">人审后发送</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="basics" data-title="AI 基础">
+          <div class="job-header">
+            <div class="panel">
+              <h2>AI 基础：员工只需要掌握 4 步</h2>
+              <p class="lead">不要讲复杂模型原理。员工能把工作说清楚、把资料贴进去、把格式要明确，就能开始用。</p>
+            </div>
+            <div class="scenario">
+              <h3>万能公式</h3>
+              <p>你是【岗位角色】。请根据【资料】完成【任务】，输出为【格式】，最后提醒【人工审核点】。</p>
+            </div>
+          </div>
+
+          <div class="grid two">
+            <div class="panel">
+              <h3>4 步操作</h3>
+              <ul class="checklist">
+                <li>定角色：你是财税顾问、代账会计、客服主管。</li>
+                <li>喂资料：贴客户背景、聊天记录、票据摘要。</li>
+                <li>定格式：要求表格、清单、微信话术、SOP。</li>
+                <li>要审核：让 AI 标出不确定项和需人工确认项。</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>使用边界</h3>
+              <ul class="checklist">
+                <li>不能让 AI 直接承诺税务结果。</li>
+                <li>不能把客户敏感资料原样上传。</li>
+                <li>不能用 AI 替代最终申报、合同、政策判断。</li>
+                <li>可以让 AI 做初稿、清单、检查、总结。</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="prompt-list">
+            <article class="prompt-card" data-tags="基础 通用 需求整理">
+              <div class="prompt-head"><strong>基础 1：客户需求整理</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>你是财税公司客户顾问。请根据下面的客户聊天记录，整理成表格：客户基本情况、明确需求、隐藏需求、客户顾虑、下一步追问问题、建议推荐服务。要求语言简洁，适合销售跟进使用。
+
+客户聊天记录：
+【粘贴客户聊天记录】</pre>
+            </article>
+            <article class="prompt-card" data-tags="基础 通用 输出检查">
+              <div class="prompt-head"><strong>基础 2：发送前检查</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>请帮我检查下面这段准备发给客户的话术。检查维度：是否专业、是否清楚、是否有压迫感、是否遗漏下一步动作、是否存在过度承诺。然后给出优化版，保持微信沟通语气。
+
+原话术：
+【粘贴原话术】</pre>
+            </article>
+            <article class="prompt-card" data-tags="基础 通用 表格">
+              <div class="prompt-head"><strong>基础 3：杂乱信息转表格</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>请把下面的杂乱信息整理成表格。表头为：事项、当前状态、缺失信息、负责人、截止时间、风险提醒。无法判断的地方写“需人工确认”。
+
+原始信息：
+【粘贴资料】</pre>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="cases" data-title="Mock 案例库">
+          <div class="panel">
+            <h2>Mock 案例库：成都本地小微企业</h2>
+            <p class="lead">培训现场不用真实客户数据。以下案例覆盖柒仟常见业务：注册、代账、票据资料、税务风险、续费挽留。</p>
+          </div>
+
+          <div class="grid two" style="margin-top:16px">
+            <article class="case-card">
+              <h3>案例 A：蜀味小碗餐饮店</h3>
+              <div class="case-meta">
+                <span>客户：准备在成都武侯区开小餐饮店。</span>
+                <span>问题：只问“注册公司和代账多少钱”。</span>
+                <span>业务机会：公司注册、食品经营许可、代理记账、发票服务。</span>
+              </div>
+              <p class="small">模拟聊天：老板说预算有限，想尽快开业，不清楚个体户和公司的区别。</p>
+            </article>
+
+            <article class="case-card">
+              <h3>案例 B：锦城商贸有限公司</h3>
+              <div class="case-meta">
+                <span>客户：小规模商贸公司，月销售 20-40 万。</span>
+                <span>问题：票据乱、银行流水多、每月资料拖延。</span>
+                <span>业务机会：月度资料清单、票据规范、风险提醒、加购整理服务。</span>
+              </div>
+              <p class="small">模拟资料：进项票不足，老板微信转账较多，部分收入未说明。</p>
+            </article>
+
+            <article class="case-card">
+              <h3>案例 C：蓉企咨询工作室</h3>
+              <div class="case-meta">
+                <span>客户：咨询服务类小微企业。</span>
+                <span>问题：长期零申报，但实际有收款。</span>
+                <span>业务机会：税务风险沟通、规范申报、补充资料、老板财税培训。</span>
+              </div>
+              <p class="small">模拟聊天：客户问“我不开发票，是不是就不用交税”。</p>
+            </article>
+
+            <article class="case-card">
+              <h3>案例 D：青羊科技服务公司</h3>
+              <div class="case-meta">
+                <span>客户：柒仟老客户，已服务 1 年。</span>
+                <span>问题：认为回复慢、价格贵，准备换代账。</span>
+                <span>业务机会：投诉处理、服务补救、续费挽留、客户分层。</span>
+              </div>
+              <p class="small">模拟投诉：客户说上月问题等了两天才回复，朋友推荐了更便宜的代账。</p>
+            </article>
+          </div>
+
+          <div class="band">
+            <h3>现场使用方式</h3>
+            <p>讲师先用案例 A 做演示；分组时销售组用 A，会计组用 B，客服组用 D，管理组把 A-D 汇总成周报。</p>
+          </div>
+        </section>
+
+        <section class="section" id="sales" data-title="销售顾问">
+          <div class="job-header">
+            <div class="panel">
+              <h2>销售顾问：从问价格到做诊断</h2>
+              <p class="lead">销售岗最适合先用 AI 做“客户诊断”和“话术优化”。核心不是让 AI 卖，而是让员工少漏问、说得更专业。</p>
+              <div class="tags">
+                <span class="tag">客户追问</span>
+                <span class="tag">服务方案</span>
+                <span class="tag gold">异议处理</span>
+              </div>
+            </div>
+            <div class="scenario">
+              <h3>典型场景</h3>
+              <p>客户：“注册公司多少钱？代账一个月多少钱？我就是开个小店，越便宜越好。”</p>
+            </div>
+          </div>
+
+          <div class="prompt-list">
+            <article class="prompt-card" data-tags="销售 顾问 诊断 餐饮">
+              <div class="prompt-head"><strong>销售 1：客户诊断追问</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>你是成都财税顾问。客户准备开一家小餐饮店，只问注册公司和代账价格。请设计 8 个追问问题，用来判断客户是否需要：公司注册、个体户注册、食品经营许可、代理记账、发票服务、社保开户。输出为微信聊天话术，语气自然，不要像调查问卷。</pre>
+            </article>
+            <article class="prompt-card" data-tags="销售 顾问 方案">
+              <div class="prompt-head"><strong>销售 2：服务方案生成</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>你是财税顾问。请根据以下客户信息，生成一份简短服务方案，包含：客户情况判断、推荐服务、每项服务价值、下一步需要客户提供的资料。不要直接承诺税务结果，涉及政策的地方提示“以主管部门和实际审核为准”。
+
+客户信息：
+【粘贴客户情况】</pre>
+            </article>
+            <article class="prompt-card" data-tags="销售 顾问 报价">
+              <div class="prompt-head"><strong>销售 3：报价解释</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>客户觉得代理记账价格贵。请帮我生成 3 个版本的解释话术：简短版、专业版、温和成交版。重点说明专业代账能减少资料遗漏、申报延误、发票和税务风险，但不要制造恐吓感。</pre>
+            </article>
+            <article class="prompt-card" data-tags="销售 顾问 异议">
+              <div class="prompt-head"><strong>销售 4：异议处理</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>请针对客户异议“别人家更便宜”，生成一段微信回复。要求：先理解客户价格敏感，再解释服务差异，最后引导客户比较交付内容。语气真诚、克制，不贬低同行。</pre>
+            </article>
+            <article class="prompt-card" data-tags="销售 顾问 跟进">
+              <div class="prompt-head"><strong>销售 5：跟进计划</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>请根据以下客户沟通记录，帮我制定 3 天跟进计划。输出表格：跟进时间、跟进目标、发送话术、需要确认的信息、成交信号。
+
+客户沟通记录：
+【粘贴记录】</pre>
+            </article>
+          </div>
+
+          <div class="grid two" style="margin-top:18px">
+            <div class="panel">
+              <h3>AI 输出示例</h3>
+              <div class="example-output">“我先帮您确认几个关键点，这样能判断是注册个体户更合适，还是公司更合适。您这边是否需要堂食？后续是否会开票？预计每月流水大概多少？”</div>
+            </div>
+            <div class="panel">
+              <h3>人工审核要点</h3>
+              <ul class="checklist">
+                <li>不能承诺“绝对省税”“包过许可”。</li>
+                <li>报价要和公司实际套餐一致。</li>
+                <li>政策和许可要求要以当地实际办理口径为准。</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="registration" data-title="工商许可">
+          <div class="job-header">
+            <div class="panel">
+              <h2>工商许可：把办理流程变成客户看得懂的清单</h2>
+              <p class="lead">工商和许可岗位的 AI 价值在于“减少反复解释”和“减少漏资料”。员工把办理事项讲清楚，AI 负责生成材料清单和客户通知。</p>
+              <div class="tags">
+                <span class="tag">注册</span>
+                <span class="tag">变更</span>
+                <span class="tag">注销</span>
+                <span class="tag gold">客户通知</span>
+              </div>
+            </div>
+            <div class="scenario">
+              <h3>典型场景</h3>
+              <p>客户第一次注册公司，不知道名称、地址、经营范围、股东信息怎么准备。</p>
+            </div>
+          </div>
+
+          <div class="prompt-list">
+            <article class="prompt-card" data-tags="工商 注册 材料">
+              <div class="prompt-head"><strong>工商 1：注册材料清单</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>你是工商注册专员。客户计划在成都注册一家小规模商贸公司。请生成客户需准备的材料清单、办理流程、常见卡点、需要提前确认的问题。输出为微信可发送版本，涉及审核口径请提示“以登记机关实际要求为准”。</pre>
+            </article>
+            <article class="prompt-card" data-tags="工商 经营范围">
+              <div class="prompt-head"><strong>工商 2：经营范围沟通</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>客户描述业务为：【粘贴客户业务描述】。请帮我整理可能涉及的经营范围方向，并列出需要进一步确认的问题。不要输出最终法律文本，只输出沟通参考和风险提醒。</pre>
+            </article>
+            <article class="prompt-card" data-tags="工商 变更 流程">
+              <div class="prompt-head"><strong>工商 3：变更流程说明</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>你是工商变更专员。客户要做公司地址变更。请生成：办理前确认事项、客户需准备资料、办理流程、预计沟通节点、完成后提醒事项。输出为清单格式。</pre>
+            </article>
+            <article class="prompt-card" data-tags="工商 注销">
+              <div class="prompt-head"><strong>工商 4：注销前沟通</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>客户想注销公司。请帮我生成一套注销前沟通问题，用于确认是否存在未申报、欠税、发票、银行账户、社保、公章、工商异常等事项。语气专业，不吓唬客户。</pre>
+            </article>
+            <article class="prompt-card" data-tags="工商 客户通知">
+              <div class="prompt-head"><strong>工商 5：进度提醒</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>请把下面的办理进度整理成客户通知。要求：说明当前进度、下一步动作、客户需配合事项、预计反馈时间。语气简洁、负责。
+
+办理进度：
+【粘贴内部进度】</pre>
+            </article>
+          </div>
+
+          <div class="band">
+            <h3>现场练习</h3>
+            <p>用“蜀味小碗餐饮店”案例，让学员生成注册材料清单和食品经营许可咨询问题。要求：客户能看懂，且不做包过承诺。</p>
+          </div>
+        </section>
+
+        <section class="section" id="accounting" data-title="会计代账">
+          <div class="job-header">
+            <div class="panel">
+              <h2>会计代账：资料整理、风险初筛、客户沟通</h2>
+              <p class="lead">会计岗不让 AI 做最终申报判断。真正落地的是：资料缺口清单、票据归类、流水说明、异常点提醒、客户补资料话术。</p>
+              <div class="tags">
+                <span class="tag">资料清单</span>
+                <span class="tag">票据整理</span>
+                <span class="tag red">风险初筛</span>
+                <span class="tag blue">人工复核</span>
+              </div>
+            </div>
+            <div class="scenario">
+              <h3>典型场景</h3>
+              <p>客户每月底发一堆票据、截图、流水，缺什么说不清，会计反复催。</p>
+            </div>
+          </div>
+
+          <div class="prompt-list">
+            <article class="prompt-card" data-tags="会计 代账 资料清单">
+              <div class="prompt-head"><strong>会计 1：月度资料缺口</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>你是代理记账会计。以下是客户本月提交的资料摘要，请整理：已收到资料、缺失资料、需要客户补充说明的问题、可能影响申报的风险点。输出表格，无法判断的写“需人工确认”。
+
+资料摘要：
+【粘贴资料摘要】</pre>
+            </article>
+            <article class="prompt-card" data-tags="会计 票据 分类">
+              <div class="prompt-head"><strong>会计 2：票据分类建议</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>请根据下面的票据信息，按用途初步分类：收入票、成本票、费用票、待确认票、异常票。每一类说明判断原因和需客户补充的信息。注意：这只是整理建议，不作为最终入账判断。
+
+票据信息：
+【粘贴票据摘要】</pre>
+            </article>
+            <article class="prompt-card" data-tags="会计 银行流水">
+              <div class="prompt-head"><strong>会计 3：流水说明清单</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>以下是客户银行流水摘要。请帮我列出需要客户说明的款项，输出表格：日期、金额、对方名称、疑问点、建议询问话术、是否影响本月处理。
+
+流水摘要：
+【粘贴流水摘要】</pre>
+            </article>
+            <article class="prompt-card" data-tags="会计 风险 零申报">
+              <div class="prompt-head"><strong>会计 4：零申报风险沟通</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>客户长期零申报，但聊天中提到实际有收款。请帮我生成一段专业沟通话术，提醒客户如实提供收入、成本和费用资料。要求：不直接下结论，不恐吓，强调规范申报和资料完整。</pre>
+            </article>
+            <article class="prompt-card" data-tags="会计 客户补资料">
+              <div class="prompt-head"><strong>会计 5：补资料微信话术</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>请把下面的缺失资料整理成一段发给客户的微信。要求：先说明目的，再列清单，最后给截止时间和联系方式。语气礼貌、明确。
+
+缺失资料：
+【粘贴缺失资料】</pre>
+            </article>
+            <article class="prompt-card" data-tags="会计 数电票 电子凭证">
+              <div class="prompt-head"><strong>会计 6：数电票资料提醒</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>你是代账会计。请给小微企业客户写一段提醒，说明本月需要整理和提供数电票、纸质发票、银行流水、合同或业务说明等资料。要求客户能看懂，并提醒电子凭证也要保存完整。</pre>
+            </article>
+          </div>
+
+          <div class="grid two" style="margin-top:18px">
+            <div class="panel">
+              <h3>人工审核要点</h3>
+              <ul class="checklist">
+                <li>票据能否入账、税前扣除、申报处理必须会计判断。</li>
+                <li>AI 不知道客户完整账套，不能直接采纳风险结论。</li>
+                <li>对客户措辞避免“你违规了”，改为“需要进一步确认”。</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>现场练习</h3>
+              <p>用“锦城商贸有限公司”案例，生成资料缺口表和补资料微信话术。</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="service" data-title="客服续费">
+          <div class="job-header">
+            <div class="panel">
+              <h2>客服续费：把情绪问题变成处理动作</h2>
+              <p class="lead">客服岗最容易马上见效：投诉记录总结、客户情绪判断、回访话术、续费挽留、工单归类。</p>
+              <div class="tags">
+                <span class="tag">投诉总结</span>
+                <span class="tag">回访</span>
+                <span class="tag gold">续费挽留</span>
+              </div>
+            </div>
+            <div class="scenario">
+              <h3>典型场景</h3>
+              <p>老客户说回复慢、朋友介绍更便宜，准备下月不续费。</p>
+            </div>
+          </div>
+
+          <div class="prompt-list">
+            <article class="prompt-card" data-tags="客服 投诉 总结">
+              <div class="prompt-head"><strong>客服 1：投诉摘要</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>你是财税公司客服主管。请根据下面的客户投诉记录，整理成表格：客户不满点、涉及岗位、已发生影响、客户情绪、需要核实的信息、建议处理动作。
+
+投诉记录：
+【粘贴投诉记录】</pre>
+            </article>
+            <article class="prompt-card" data-tags="客服 安抚 话术">
+              <div class="prompt-head"><strong>客服 2：安抚话术</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>客户反馈服务响应慢，情绪不满。请生成一段微信安抚话术：先承认体验问题，再说明会核实处理，明确下一步反馈时间。语气真诚，不推责，不卑微。</pre>
+            </article>
+            <article class="prompt-card" data-tags="客服 续费 挽留">
+              <div class="prompt-head"><strong>客服 3：续费挽留</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>客户觉得价格贵，准备换更便宜的代账公司。请生成续费挽留话术，包含：理解客户、复盘已提供服务、说明后续服务计划、邀请客户给一次改进机会。不要贬低同行。</pre>
+            </article>
+            <article class="prompt-card" data-tags="客服 回访">
+              <div class="prompt-head"><strong>客服 4：回访提纲</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>请为财税公司老客户回访设计 8 个问题，用于了解客户满意度、近期业务变化、是否有开票/用工/合同/税务问题、是否存在续费风险。输出为电话回访提纲。</pre>
+            </article>
+            <article class="prompt-card" data-tags="客服 工单">
+              <div class="prompt-head"><strong>客服 5：工单归类</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>请把下面的客户问题记录归类，输出表格：问题类型、紧急程度、责任岗位、建议回复、是否影响续费、下一步动作。
+
+客户问题记录：
+【粘贴记录】</pre>
+            </article>
+          </div>
+
+          <div class="band">
+            <h3>现场练习</h3>
+            <p>用“青羊科技服务公司”案例，生成投诉摘要、安抚话术和续费挽留话术。要求：不承诺不确定结果，必须给出明确反馈时间。</p>
+          </div>
+        </section>
+
+        <section class="section" id="operations" data-title="管理运营">
+          <div class="job-header">
+            <div class="panel">
+              <h2>管理运营：用 AI 做复盘、质检和 SOP</h2>
+              <p class="lead">管理层不用先做复杂系统。先把团队周报、客户问题、服务质量、SOP 改进变成固定 AI 模板。</p>
+              <div class="tags">
+                <span class="tag">周报</span>
+                <span class="tag">质检</span>
+                <span class="tag">SOP</span>
+                <span class="tag blue">数据汇总</span>
+              </div>
+            </div>
+            <div class="scenario">
+              <h3>典型场景</h3>
+              <p>主管每周要看客户问题、员工跟进、服务风险，但原始记录分散在微信、表格、工单里。</p>
+            </div>
+          </div>
+
+          <div class="prompt-list">
+            <article class="prompt-card" data-tags="管理 周报">
+              <div class="prompt-head"><strong>管理 1：团队周报</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>你是财税公司运营负责人。请根据以下本周客户问题记录，生成管理层周报：高频问题、涉及岗位、客户风险、已完成动作、下周改进重点。输出结构清晰，适合早会使用。
+
+本周记录：
+【粘贴记录】</pre>
+            </article>
+            <article class="prompt-card" data-tags="管理 质检">
+              <div class="prompt-head"><strong>管理 2：服务质检</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>请根据以下客户沟通记录，对员工服务进行质检。维度：响应是否及时、表达是否专业、是否明确下一步、是否存在过度承诺、是否需要主管介入。输出评分和改进建议。
+
+沟通记录：
+【粘贴记录】</pre>
+            </article>
+            <article class="prompt-card" data-tags="管理 SOP">
+              <div class="prompt-head"><strong>管理 3：SOP 优化</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>请把下面的实际工作流程优化成 SOP。要求包含：适用场景、触发条件、操作步骤、交付标准、风险提醒、客户通知模板、责任岗位。
+
+实际流程：
+【粘贴流程】</pre>
+            </article>
+            <article class="prompt-card" data-tags="管理 客户分层">
+              <div class="prompt-head"><strong>管理 4：客户风险分层</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>请根据以下客户服务记录，按续费风险分为高、中、低三类，并说明原因、建议跟进动作、责任人和最晚处理时间。
+
+客户服务记录：
+【粘贴记录】</pre>
+            </article>
+            <article class="prompt-card" data-tags="管理 培训">
+              <div class="prompt-head"><strong>管理 5：内部培训题目</strong><button class="copy-btn" type="button">复制提示词</button></div>
+              <pre>请根据以下员工本周常见问题，设计一次 30 分钟内部微培训。输出：培训主题、3 个重点、案例、练习题、讲师提醒。
+
+员工问题：
+【粘贴问题】</pre>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="library" data-title="提示词总库">
+          <div class="panel">
+            <h2>提示词总库</h2>
+            <p class="lead">这里汇总所有可复制提示词。搜索关键词后，复制再替换方括号里的内容即可。</p>
+          </div>
+          <div class="library-tools">
+            <input id="promptSearch" type="search" placeholder="搜索提示词：报价、票据、投诉、周报">
+            <span class="pill" id="promptCount">0 条提示词</span>
+          </div>
+          <div class="prompt-list" id="libraryList"></div>
+        </section>
+
+        <section class="section" id="agenda" data-title="讲师流程">
+          <div class="panel">
+            <h2>3 小时讲师流程</h2>
+            <p class="lead">建议“讲练平衡”：每个岗位讲 1 个典型场景，现场复制 1 条提示词练习。</p>
+          </div>
+
+          <div class="timeline" style="margin-top:16px">
+            <div class="timeline-item"><b>0-15 分钟</b><span>AI 能做什么、不能做什么，强调人审和隐私。</span></div>
+            <div class="timeline-item"><b>15-45 分钟</b><span>万能公式：角色、资料、格式、审核点。</span></div>
+            <div class="timeline-item"><b>45-80 分钟</b><span>销售顾问：客户诊断、报价解释、异议处理。</span></div>
+            <div class="timeline-item"><b>80-110 分钟</b><span>工商许可：注册材料、流程提醒、客户通知。</span></div>
+            <div class="timeline-item"><b>110-150 分钟</b><span>会计代账：资料清单、票据整理、风险初筛。</span></div>
+            <div class="timeline-item"><b>150-180 分钟</b><span>客服续费、管理周报、提示词手册沉淀。</span></div>
+          </div>
+
+          <div class="grid two" style="margin-top:18px">
+            <div class="panel">
+              <h3>讲师话术重点</h3>
+              <ul class="checklist">
+                <li>不要把 AI 讲神，员工只要会复制模板。</li>
+                <li>每次演示都用同一个结构：原始资料、提示词、输出、人工审核。</li>
+                <li>强调“替换客户信息”比“背提示词”更重要。</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>现场产出</h3>
+              <ul class="checklist">
+                <li>每人至少复制并改写 2 条提示词。</li>
+                <li>每组提交 1 个岗位工作模板。</li>
+                <li>讲师收集高频问题，课后合并成公司版提示词手册。</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="band">
+            <h3>参考环境</h3>
+            <p>数电票已全国推广，电子凭证和会计信息化要求持续加强。培训时只讲工作影响：票据、凭证、流水、合同等资料会越来越数字化，员工更需要把资料整理成结构化清单。</p>
+            <p class="small">参考：<a href="https://www.gov.cn/zhengce/zhengceku/202411/content_6989164.htm" target="_blank" rel="noreferrer">国家税务总局关于推广应用全面数字化电子发票的公告</a>；<a href="https://www.mof.gov.cn/jrttts/202408/t20240809_3941454.htm" target="_blank" rel="noreferrer">财政部会计司关于会计信息化工作规范的说明</a>。</p>
+          </div>
+        </section>
+
+        <div class="footer">
+          本手册使用 mock 案例，不包含真实客户隐私。所有 AI 输出均需员工复核后使用。
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast" id="toast">已复制</div>
+
+  <script>
+    const sidebar = document.getElementById('sidebar');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const navButtons = Array.from(document.querySelectorAll('.nav button'));
+    const sections = Array.from(document.querySelectorAll('.section'));
+    const navSearch = document.getElementById('navSearch');
+    const promptSearch = document.getElementById('promptSearch');
+    const libraryList = document.getElementById('libraryList');
+    const promptCount = document.getElementById('promptCount');
+    const toast = document.getElementById('toast');
+
+    function showSection(id) {
+      sections.forEach((section) => section.classList.toggle('active', section.id === id));
+      navButtons.forEach((button) => button.classList.toggle('active', button.dataset.section === id));
+      sidebar.classList.remove('open');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    navButtons.forEach((button) => {
+      button.addEventListener('click', () => showSection(button.dataset.section));
+    });
+
+    mobileMenu.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+    });
+
+    document.addEventListener('click', (event) => {
+      if (window.innerWidth > 980) return;
+      if (!sidebar.contains(event.target) && event.target !== mobileMenu) {
+        sidebar.classList.remove('open');
+      }
+    });
+
+    navSearch.addEventListener('input', () => {
+      const keyword = navSearch.value.trim().toLowerCase();
+      navButtons.forEach((button) => {
+        button.classList.toggle('hidden', keyword && !button.textContent.toLowerCase().includes(keyword));
+      });
+    });
+
+    function showToast(text) {
+      toast.textContent = text;
+      toast.classList.add('show');
+      window.clearTimeout(showToast.timer);
+      showToast.timer = window.setTimeout(() => toast.classList.remove('show'), 1400);
+    }
+
+    async function copyText(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast('已复制提示词');
+      } catch (error) {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        textarea.remove();
+        showToast('已复制提示词');
+      }
+    }
+
+    document.addEventListener('click', (event) => {
+      const button = event.target.closest('.copy-btn');
+      if (!button) return;
+      const card = button.closest('.prompt-card');
+      const prompt = card.querySelector('pre').innerText.trim();
+      copyText(prompt);
+    });
+
+    function getSourcePrompts() {
+      return Array.from(document.querySelectorAll('.section:not(#library) .prompt-card')).map((card, index) => {
+        return {
+          title: card.querySelector('.prompt-head strong').textContent.trim(),
+          tags: card.dataset.tags || '',
+          text: card.querySelector('pre').innerText.trim(),
+          index
+        };
+      });
+    }
+
+    const prompts = getSourcePrompts();
+
+    function renderLibrary() {
+      const keyword = (promptSearch.value || '').trim().toLowerCase();
+      const matched = prompts.filter((item) => {
+        const haystack = `${item.title} ${item.tags} ${item.text}`.toLowerCase();
+        return !keyword || haystack.includes(keyword);
+      });
+
+      promptCount.textContent = `${matched.length} 条提示词`;
+      libraryList.innerHTML = matched.map((item) => `
+        <article class="prompt-card" data-tags="${item.tags}">
+          <div class="prompt-head">
+            <strong>${item.title}</strong>
+            <button class="copy-btn" type="button">复制提示词</button>
+          </div>
+          <pre>${escapeHtml(item.text)}</pre>
+        </article>
+      `).join('');
+    }
+
+    function escapeHtml(value) {
+      return value
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    promptSearch.addEventListener('input', renderLibrary);
+    renderLibrary();
+  </script>
+</body>
+</html>
