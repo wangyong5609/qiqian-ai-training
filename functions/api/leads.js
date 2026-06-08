@@ -1,11 +1,16 @@
-const COMPANY_NAME = "企犇牛科技（四川）集团有限公司";
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type"
+};
 
 function jsonResponse(body, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
     headers: {
       "Content-Type": "application/json; charset=utf-8",
-      "Cache-Control": "no-store"
+      "Cache-Control": "no-store",
+      ...corsHeaders
     }
   });
 }
@@ -26,9 +31,19 @@ function validateLead(body) {
   if (phone && !/^1\d{10}$/.test(phone)) return { error: "手机号格式不正确" };
   if (!city) return { error: "请选择所在城市" };
   if (!body.consent) return { error: "请确认授权说明" };
-  if (!report || !report.industry || typeof report.score !== "number") {
+  if (!report || !report.industry || typeof report.score !== "number" || !Array.isArray(report.answers)) {
     return { error: "缺少测评结果" };
   }
+
+  const answers = report.answers.slice(0, 24).map((answer) => ({
+    questionTitle: sanitizeText(answer.questionTitle, 180),
+    questionDesc: sanitizeText(answer.questionDesc, 300),
+    riskName: sanitizeText(answer.riskName, 80),
+    selectedOptionText: sanitizeText(answer.selectedOptionText, 220),
+    score: Number(answer.score) || 0,
+    fix: sanitizeText(answer.fix, 220),
+    tag: sanitizeText(answer.tag, 20)
+  }));
 
   return {
     lead: {
@@ -41,66 +56,63 @@ function validateLead(body) {
       level: sanitizeText(report.level, 40),
       title: sanitizeText(report.title, 120),
       highItems: Array.isArray(report.highItems) ? report.highItems.slice(0, 12) : [],
-      warnItems: Array.isArray(report.warnItems) ? report.warnItems.slice(0, 12) : []
+      warnItems: Array.isArray(report.warnItems) ? report.warnItems.slice(0, 12) : [],
+      report: {
+        industry: sanitizeText(report.industry, 40),
+        industryKey: sanitizeText(report.industryKey, 40),
+        score: report.score,
+        level: sanitizeText(report.level, 40),
+        title: sanitizeText(report.title, 120),
+        message: sanitizeText(report.message, 300),
+        highItems: Array.isArray(report.highItems) ? report.highItems.slice(0, 12) : [],
+        warnItems: Array.isArray(report.warnItems) ? report.warnItems.slice(0, 12) : [],
+        answers
+      },
+      answers
     }
   };
 }
 
-function buildLeadMessage(record) {
-  return [
-    "企犇牛税务风险速测新线索",
-    `服务主体：${COMPANY_NAME}`,
-    `编号：${record.leadId}`,
-    `行业：${record.industry}`,
-    `得分：${record.score}`,
-    `等级：${record.level}`,
-    `称呼：${record.name}`,
-    `城市：${record.city}`,
-    `手机：${record.phone || "未填写"}`,
-    `微信：${record.wechat || "未填写"}`,
-    `高危项：${record.highItems.join("、") || "暂无"}`,
-    `关注项：${record.warnItems.join("、") || "暂无"}`
-  ].join("\n");
-}
-
-function isWecomWebhook(url) {
-  return url.includes("qyapi.weixin.qq.com/cgi-bin/webhook/send");
-}
-
-async function forwardToWebhook(record, env) {
-  const url = env && (env.WECOM_WEBHOOK_URL || env.LEADS_WEBHOOK_URL);
-  if (!url) return { forwarded: false };
-
-  const message = buildLeadMessage(record);
-  const isWecom = isWecomWebhook(url);
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(isWecom ? {
-      msgtype: "text",
-      text: { content: message }
-    } : {
-      text: message,
-      lead: record
-    })
-  });
-
-  if (!response.ok) {
-    throw new Error(`Webhook failed with ${response.status}`);
+async function storeLead(record, env) {
+  if (!env || !env.DB) {
+    throw new Error("D1 database is not configured");
   }
 
-  let result = null;
-  try {
-    result = await response.json();
-  } catch (error) {
-    result = null;
-  }
+  await env.DB.prepare(`
+    INSERT INTO leads (
+      lead_id,
+      name,
+      phone,
+      city,
+      wechat,
+      industry,
+      score,
+      level,
+      title,
+      high_items,
+      warn_items,
+      report_json,
+      answers_json,
+      received_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(
+    record.leadId,
+    record.name,
+    record.phone,
+    record.city,
+    record.wechat,
+    record.industry,
+    record.score,
+    record.level,
+    record.title,
+    JSON.stringify(record.highItems),
+    JSON.stringify(record.warnItems),
+    JSON.stringify(record.report),
+    JSON.stringify(record.answers),
+    record.receivedAt
+  ).run();
 
-  if (isWecom && result && result.errcode !== 0) {
-    throw new Error(`WeCom webhook failed with ${result.errcode}: ${result.errmsg || "unknown error"}`);
-  }
-
-  return { forwarded: true, channel: isWecom ? "wecom" : "generic" };
+  return { stored: true };
 }
 
 export async function onRequest(context) {
@@ -111,7 +123,8 @@ export async function onRequest(context) {
       status: 204,
       headers: {
         "Allow": "POST, OPTIONS",
-        "Cache-Control": "no-store"
+        "Cache-Control": "no-store",
+        ...corsHeaders
       }
     });
   }
@@ -131,17 +144,23 @@ export async function onRequest(context) {
       ...validation.lead,
       leadId: `QBN-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`,
       receivedAt: new Date().toISOString(),
-      companyName: COMPANY_NAME,
       source: "qibenniu-tax-risk-cloudflare"
     };
 
-    const delivery = await forwardToWebhook(record, env);
-    console.log(JSON.stringify({ event: "tax-risk-lead", delivery, record }));
+    const storage = await storeLead(record, env);
+    console.log(JSON.stringify({
+      event: "tax-risk-lead",
+      storage,
+      leadId: record.leadId,
+      industry: record.industry,
+      score: record.score,
+      receivedAt: record.receivedAt
+    }));
 
     return jsonResponse({
       ok: true,
       leadId: record.leadId,
-      delivery
+      storage
     });
   } catch (error) {
     console.error("lead-submit-failed", error);

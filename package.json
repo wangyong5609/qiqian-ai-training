@@ -1,5 +1,7 @@
 {
+  "type": "module",
   "scripts": {
+    "test": "node --test test/*.test.mjs",
     "deploy": "sh scripts/deploy-cloudflare.sh"
   },
   "devDependencies": {

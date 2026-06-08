@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>企犇牛客资后台</title>
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body class="admin-page">
+  <header class="admin-shell-header">
+    <div class="brand" aria-label="企犇牛">
+      <div class="brand-mark">犇</div>
+      <div>
+        <p class="brand-title">企犇牛客资后台</p>
+        <p class="brand-subtitle">销售跟进工作台</p>
+      </div>
+    </div>
+    <button class="secondary-btn admin-only hidden" id="logoutButton" type="button">退出登录</button>
+  </header>
+
+  <main class="admin-shell">
+    <section class="admin-login" id="loginPanel">
+      <div>
+        <h1>登录后台查看客资</h1>
+        <p>使用管理员账号登录。密码会在浏览器中计算一次性校验值，不会以明文发送到服务端。</p>
+      </div>
+      <form class="admin-login-form" id="loginForm">
+        <label>
+          账号
+          <input id="adminUsername" name="username" type="text" autocomplete="username" placeholder="请输入账号">
+        </label>
+        <label>
+          密码
+          <input id="adminPassword" name="password" type="password" autocomplete="current-password" placeholder="请输入密码">
+        </label>
+        <button class="primary-btn" id="loginButton" type="submit">登录后台</button>
+        <p class="notice" id="loginNotice">登录后可查看最近 200 条客资。</p>
+      </form>
+    </section>
+
+    <section class="admin-dashboard hidden" id="dashboardPanel">
+      <div class="admin-dashboard-head">
+        <div>
+          <h1>客资列表</h1>
+          <p>优先展示销售需要跟进的信息，问答详情可展开查看。</p>
+        </div>
+        <button class="primary-btn" id="refreshButton" type="button">刷新客资</button>
+      </div>
+
+      <div class="notice" id="dashboardNotice">正在读取客资...</div>
+
+      <div class="lead-table-wrap">
+        <table class="lead-table">
+          <thead>
+            <tr>
+              <th>提交时间</th>
+              <th>客户</th>
+              <th>电话</th>
+              <th>微信</th>
+              <th>城市</th>
+              <th>行业</th>
+              <th>结果</th>
+              <th>问答</th>
+            </tr>
+          </thead>
+          <tbody id="leadRows">
+            <tr><td colspan="8" class="muted">暂无数据。</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const loginPanel = document.getElementById("loginPanel");
+    const dashboardPanel = document.getElementById("dashboardPanel");
+    const logoutButton = document.getElementById("logoutButton");
+    const loginNotice = document.getElementById("loginNotice");
+    const dashboardNotice = document.getElementById("dashboardNotice");
+    const leadRows = document.getElementById("leadRows");
+
+    function setNotice(element, message, type) {
+      element.className = `notice ${type || ""}`;
+      element.textContent = message;
+    }
+
+    function showDashboard() {
+      loginPanel.classList.add("hidden");
+      dashboardPanel.classList.remove("hidden");
+      logoutButton.classList.remove("hidden");
+    }
+
+    function showLogin() {
+      loginPanel.classList.remove("hidden");
+      dashboardPanel.classList.add("hidden");
+      logoutButton.classList.add("hidden");
+    }
+
+    async function sha256(text) {
+      const data = new TextEncoder().encode(text);
+      const digest = await crypto.subtle.digest("SHA-256", data);
+      return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+    }
+
+    async function login(event) {
+      event.preventDefault();
+      const username = document.getElementById("adminUsername").value.trim();
+      const password = document.getElementById("adminPassword").value;
+      if (!username || !password) {
+        setNotice(loginNotice, "请输入账号和密码。", "error");
+        return;
+      }
+
+      const button = document.getElementById("loginButton");
+      button.disabled = true;
+      button.textContent = "登录中...";
+      setNotice(loginNotice, "正在校验...", "");
+
+      try {
+        const challengeResponse = await fetch(`/api/admin/auth/challenge?username=${encodeURIComponent(username)}`);
+        const challenge = await challengeResponse.json();
+        if (!challengeResponse.ok || !challenge.ok) {
+          throw new Error(challenge.message || "账号或密码错误");
+        }
+
+        const passwordHash = await sha256(`${challenge.salt}:${password}`);
+        const proof = await sha256(`${passwordHash}:${challenge.challengeToken}`);
+        const loginResponse = await fetch("/api/admin/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username,
+            challengeToken: challenge.challengeToken,
+            proof
+          })
+        });
+        const result = await loginResponse.json();
+        if (!loginResponse.ok || !result.ok) {
+          throw new Error(result.message || "账号或密码错误");
+        }
+
+        document.getElementById("adminPassword").value = "";
+        showDashboard();
+        await loadLeads();
+      } catch (error) {
+        setNotice(loginNotice, error.message || "登录失败", "error");
+      } finally {
+        button.disabled = false;
+        button.textContent = "登录后台";
+      }
+    }
+
+    function formatDate(value) {
+      if (!value) return "-";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return value;
+      return date.toLocaleString("zh-CN", { hour12: false });
+    }
+
+    function createCopyButton(value, label) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "copy-btn";
+      button.textContent = "复制";
+      button.disabled = !value;
+      button.addEventListener("click", async () => {
+        await navigator.clipboard.writeText(value);
+        button.textContent = "已复制";
+        window.setTimeout(() => {
+          button.textContent = "复制";
+        }, 1200);
+      });
+      button.setAttribute("aria-label", `复制${label}`);
+      return button;
+    }
+
+    function appendTextCell(row, value, className) {
+      const cell = document.createElement("td");
+      if (className) cell.className = className;
+      cell.textContent = value || "-";
+      row.append(cell);
+      return cell;
+    }
+
+    function appendContactCell(row, value, label) {
+      const cell = document.createElement("td");
+      const wrap = document.createElement("div");
+      wrap.className = "contact-copy";
+      const text = document.createElement("span");
+      text.textContent = value || "-";
+      wrap.append(text, createCopyButton(value, label));
+      cell.append(wrap);
+      row.append(cell);
+    }
+
+    function createAnswersRow(lead) {
+      const row = document.createElement("tr");
+      row.className = "answers-row hidden";
+      const cell = document.createElement("td");
+      cell.colSpan = 8;
+      const box = document.createElement("div");
+      box.className = "answers-box";
+
+      const answers = lead.answers || [];
+      if (!answers.length) {
+        box.textContent = "暂无问答明细。";
+      } else {
+        answers.forEach((answer, index) => {
+          const item = document.createElement("div");
+          item.className = "answer-item";
+          const title = document.createElement("b");
+          title.textContent = `${index + 1}. ${answer.questionTitle || answer.riskName || "未命名问题"}`;
+          const selected = document.createElement("p");
+          selected.textContent = `客户选择：${answer.selectedOptionText || "未选择"}（${answer.score || 0}分）`;
+          const fix = document.createElement("p");
+          fix.textContent = `建议：${answer.fix || "-"}`;
+          item.append(title, selected, fix);
+          box.append(item);
+        });
+      }
+
+      cell.append(box);
+      row.append(cell);
+      return row;
+    }
+
+    function renderLeads(leads) {
+      leadRows.replaceChildren();
+      if (!leads.length) {
+        const row = document.createElement("tr");
+        appendTextCell(row, "暂无客资。", "muted");
+        row.firstChild.colSpan = 8;
+        leadRows.append(row);
+        return;
+      }
+
+      leads.forEach((lead) => {
+        const row = document.createElement("tr");
+        appendTextCell(row, formatDate(lead.receivedAt));
+        appendTextCell(row, lead.name);
+        appendContactCell(row, lead.phone, "电话");
+        appendContactCell(row, lead.wechat, "微信");
+        appendTextCell(row, lead.city);
+        appendTextCell(row, lead.industry);
+        appendTextCell(row, `${lead.score}/100 · ${lead.level || "-"}`);
+
+        const actionCell = document.createElement("td");
+        const detailButton = document.createElement("button");
+        detailButton.type = "button";
+        detailButton.className = "secondary-btn small";
+        detailButton.textContent = "查看问答";
+        actionCell.append(detailButton);
+        row.append(actionCell);
+
+        const answersRow = createAnswersRow(lead);
+        detailButton.addEventListener("click", () => {
+          const hidden = answersRow.classList.toggle("hidden");
+          detailButton.textContent = hidden ? "查看问答" : "收起问答";
+        });
+
+        leadRows.append(row, answersRow);
+      });
+    }
+
+    async function loadLeads() {
+      setNotice(dashboardNotice, "正在读取客资...", "");
+      try {
+        const response = await fetch("/api/admin/leads");
+        const result = await response.json();
+        if (response.status === 401) {
+          showLogin();
+          setNotice(loginNotice, "请先登录。", "error");
+          return;
+        }
+        if (!response.ok || !result.ok) {
+          throw new Error(result.message || "读取失败");
+        }
+        showDashboard();
+        renderLeads(result.leads || []);
+        setNotice(dashboardNotice, `已读取 ${result.leads.length} 条客资。`, "success");
+      } catch (error) {
+        setNotice(dashboardNotice, error.message || "读取失败", "error");
+      }
+    }
+
+    async function logout() {
+      await fetch("/api/admin/auth/logout", { method: "POST" });
+      showLogin();
+      setNotice(loginNotice, "已退出登录。", "");
+    }
+
+    document.getElementById("loginForm").addEventListener("submit", login);
+    document.getElementById("refreshButton").addEventListener("click", loadLeads);
+    logoutButton.addEventListener("click", logout);
+
+    loadLeads();
+  </script>
+</body>
+</html>
