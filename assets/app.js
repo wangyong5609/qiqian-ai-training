@@ -127,11 +127,11 @@ function displayText(...values) {
 }
 
 function scoreColor(score) {
-  if (score >= 70) return "#c64545";
-  if (score >= 50) return "#cc785c";
-  if (score >= 30) return "#b9804c";
-  if (score >= 10) return "#5db8a6";
-  return "#5db872";
+  if (score >= 70) return "#d92d20";
+  if (score >= 50) return "#f59e0b";
+  if (score >= 30) return "#0066cc";
+  if (score >= 10) return "#2997ff";
+  return "#0f9f6e";
 }
 
 function updateMobileResultCta() {
